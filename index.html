@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111831">
+  <meta name="description" content="Menekülés a diktátor elől! Színes, pixeles, 10 kérdéses történelmi platformjáték 8. osztályos tanulóknak.">
+  <title>Menekülés a diktátor elől! – Történelmi futókaland</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.0">
+  <script defer src="questions.js?v=1.0.0"></script>
+  <script defer src="game.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="masthead">
+      <a class="brand" href="./" aria-label="Játék főoldala">
+        <span class="brand-icon" aria-hidden="true">◈</span>
+        <span><span class="brand-top">PIXEL · TÖRTÉNELEM</span><strong>IDŐFUTAM</strong></span>
+      </a>
+      <span class="edition">TANAK 8. <span class="edition-dot">✦</span> v1.0.0</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div class="eyebrow"><span class="tiny-pixel"></span> 2D TÖRTÉNELMI KALAND</div>
+        <h1>MENEKÜLÉS <span>A DIKTÁTOR</span> ELŐL!</h1>
+        <p>Ugorj át az akadályokon, válaszolj a történelmi kérdésekre, és maradj az üldöző előtt! <strong>10 kérdés. Egy futam. Te döntesz.</strong></p>
+      </section>
+
+      <section class="play-area" aria-label="Játékterület">
+        <div class="game-head">
+          <div class="hud-stat"><span class="hud-label">KÉRDÉSEK</span><strong id="hudQuestions">0 / 10</strong></div>
+          <div class="hud-stat"><span class="hud-label">PONTOK</span><strong id="hudScore">0</strong></div>
+          <div class="hud-stat"><span class="hud-label">IDŐ</span><strong id="hudTime">00:00</strong></div>
+          <div class="hud-stat chase-stat"><span class="hud-label">AZ ÜLDÖZŐ TÁVOLSÁGA</span><div class="chase-track" aria-label="Üldöző távolsága"><div class="chase-fill" id="chaseFill"></div></div><span id="chaseText">Távol</span></div>
+        </div>
+        <div class="canvas-stage" id="stage">
+          <canvas id="gameCanvas" width="960" height="540" aria-label="Oldalnézetes pixeljáték: a főhős automatikusan fut jobbra, az akadályokon ugorj át!"></canvas>
+          <div class="canvas-stamp" id="canvasStamp" aria-hidden="true">1939 → 1943</div>
+          <div class="speed-pill" id="speedPill" aria-live="polite"></div>
+          <div class="overlay" id="overlay">
+            <section class="dialog menu-dialog" id="menuPanel" aria-labelledby="menuTitle">
+              <div class="dialog-tag">◈ KÜLDETÉS INDÍTÁSA</div>
+              <div class="hero-glyph" aria-hidden="true"><span>🏃</span><span class="hero-lightning">⚡</span></div>
+              <h2 id="menuTitle">FUSS, UGORJ, GONDOLKODJ!</h2>
+              <p>Hitler pixeles figurája üldöz. Ha utolér, vége a futamnak! Történelmi kérdésnél minden megáll, amíg válaszolsz.</p>
+              <div class="rule-strip"><span><b>✓</b> Jó válasz = gyorsítás</span><span><b>×</b> Hibás = lassítás</span></div>
+              <fieldset class="difficulty-field"><legend>Válassz nehézséget:</legend>
+                <label class="difficulty-option"><input type="radio" name="difficulty" value="easy" checked><span><b>🌱 Könnyű</b><small>2 válasz · lassabb üldöző</small></span></label>
+                <label class="difficulty-option"><input type="radio" name="difficulty" value="normal"><span><b>⚡ Normál</b><small>3 válasz · átlagos tempó</small></span></label>
+                <label class="difficulty-option"><input type="radio" name="difficulty" value="hard"><span><b>🔥 Kihívás</b><small>3 válasz · gyorsabb üldöző</small></span></label>
+              </fieldset>
+              <div class="dialog-actions"><button id="startBtn" class="btn btn-primary btn-large">▶ JÁTÉK INDÍTÁSA</button><button id="resumeBtn" class="btn btn-muted" hidden>↻ MENTETT FUTAM FOLYTATÁSA</button></div>
+              <p class="fine-print">Fiktív platformjáték, nem történelmi esemény újrajátszása.</p>
+            </section>
+
+            <section class="dialog question-dialog" id="questionPanel" hidden role="dialog" aria-modal="true" aria-labelledby="questionTitle">
+              <div class="dialog-top"><span class="dialog-tag">◈ TÖRTÉNELMI KIHÍVÁS</span><span class="question-counter" id="questionCounter">1 / 10</span></div>
+              <div class="freeze-label">⏸ A JÁTÉK MEGÁLLT</div>
+              <h2 id="questionTitle">Kérdés</h2>
+              <div class="answer-options" id="answerOptions"></div>
+              <div class="question-tools"><button class="btn btn-text" id="hintBtn">💡 Kérek egy tippet</button><button class="btn btn-text" id="readBtn" aria-label="Kérdés felolvasása">🔊 Felolvasás</button></div>
+              <p class="hint-box" id="hintBox" hidden></p>
+              <p class="key-tip">Billentyűzettel is választhatsz: 1 · 2 · 3</p>
+            </section>
+
+            <section class="dialog feedback-dialog" id="feedbackPanel" hidden role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+              <div class="feedback-symbol" id="feedbackSymbol" aria-hidden="true">★</div>
+              <h2 id="feedbackTitle">Helyes válasz!</h2>
+              <p class="feedback-speed" id="feedbackSpeed">5 másodperc gyorsítás</p>
+              <p class="feedback-info" id="feedbackInfo"></p>
+              <button id="continueBtn" class="btn btn-primary btn-large">▶ FUTÁS FOLYTATÁSA</button>
+              <p class="key-tip">Folytatás: Enter</p>
+            </section>
+
+            <section class="dialog end-dialog" id="endPanel" hidden role="dialog" aria-modal="true" aria-labelledby="endTitle">
+              <div class="end-illustration" id="endIcon" aria-hidden="true">🏁</div>
+              <div class="dialog-tag" id="endTag">KÜLDETÉS TELJESÍTVE</div>
+              <h2 id="endTitle">VISSZAÉRTÉL!</h2>
+              <p id="endDescription">Elérted a célvonalat.</p>
+              <div class="result-grid"><div><span>HELYES VÁLASZ</span><strong id="resultCorrect">0 / 10</strong></div><div><span>PONT</span><strong id="resultScore">0</strong></div><div><span>FUTAMIDŐ</span><strong id="resultTime">00:00</strong></div></div>
+              <p id="bestResult" class="best-result"></p>
+              <div class="dialog-actions"><button id="retryBtn" class="btn btn-primary btn-large">↻ ÚJRA JÁTSZOM</button><button id="backBtn" class="btn btn-muted">⌂ FŐMENÜ</button></div>
+              <p class="fine-print">A játék a történelmi ismeretek gyakorlására szolgál. Az áldozatok emlékét tisztelettel őrizzük.</p>
+            </section>
+
+            <section class="dialog pause-dialog" id="pausePanel" hidden role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+              <div class="dialog-tag">⏸ SZÜNET</div>
+              <h2 id="pauseTitle">MEGÁLLT AZ IDŐ!</h2>
+              <p>A futás, az üldözés és az időmérés is szünetel.</p>
+              <div class="dialog-actions"><button id="unpauseBtn" class="btn btn-primary btn-large">▶ FOLYTATÁS</button><button id="pauseMenuBtn" class="btn btn-muted">⌂ FŐMENÜ</button></div>
+            </section>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <div class="progress-group"><span class="hud-label">PÁLYA HALADÁSA</span><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div><span id="progressText" class="progress-value">0%</span></div>
+          <div class="action-group"><button class="btn btn-jump" id="jumpBtn">↑ UGRÁS <kbd>SPACE</kbd></button><button class="btn btn-tool" id="pauseBtn" disabled>⏸ Szünet</button><button class="btn btn-tool" id="soundBtn" aria-pressed="false">♪ Hang: ki</button></div>
+        </div>
+      </section>
+
+      <section class="support-grid" aria-label="Útmutató és eredmények">
+        <article class="info-card"><span class="section-label">01 / IRÁNYÍTÁS</span><h3>Hogyan játssz?</h3><div class="control-rows"><div><kbd>SPACE</kbd> <kbd>↑</kbd><span>Ugrás az akadályok felett</span></div><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Válaszadás a kérdéseknél</span></div><div><kbd>ESC</kbd><span>Játék szüneteltetése</span></div></div><p>A karakter automatikusan fut. Telefonon használd a nagy <b>UGRÁS</b> gombot!</p></article>
+        <article class="info-card"><span class="section-label">02 / JÁTÉKSZABÁLY</span><h3>Válaszolj, és gyorsulj!</h3><div class="mini-rules"><p><span class="rule-icon good">✓</span><span>Jó válasz: <b>5 mp turbó</b>, +100 pont.</span></p><p><span class="rule-icon bad">×</span><span>Rossz válasz: <b>3 mp lassítás</b>, de továbbmehetsz.</span></p><p><span class="rule-icon blue">◆</span><span>Ugrás közben gyűjts órakristályokat!</span></p></div></article>
+        <article class="info-card"><span class="section-label">03 / EREDMÉNY</span><h3>Legjobb futam</h3><div class="best-number" id="bestHome">Még nincs eredmény</div><p>Az eredmény és a félbehagyott futam ezen a készüléken tárolódik. Nem kell regisztrálni.</p><button id="resetSavedBtn" class="btn btn-reset" hidden>Mentett futam törlése</button></article>
+      </section>
+    </main>
+    <footer><span>© 2026 · Oktatási pixelkaland · v1.0.0</span><span>Külső adatküldés és hirdetések nélkül</span></footer>
+    <div class="visually-hidden" role="status" aria-live="polite" id="announcer"></div>
+  </div>
+</body>
+</html>
