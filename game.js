@@ -1,4 +1,4 @@
-/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.3.0
+/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.3.1
  * Külső könyvtár nélküli, eredeti canvas-pixelplatformjáték.
  * A játék világát csak a 'running' állapotban léptetjük.
  */
@@ -65,6 +65,7 @@
   const PANELS = ['menuPanel','questionPanel','feedbackPanel','endPanel','pausePanel'];
   // Vereségkor egy másodpercig csak látványeffekt fut: a játékvilág megáll.
   const CATCH_DURATION = 1, CATCH_FLASH_DURATION = .4;
+  const FEEDBACK_DURATION = 3; // Válasz után automatikus folytatás; a játékvilág eközben áll.
   const reducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const near=(x,a,b)=>x>=a&&x<=b;
@@ -80,7 +81,7 @@
     gap:226,jump:0,vy:0,grounded:true,supportId:null,airJumps:0,falls:0,elapsed:0,worldClock:0,speedMode:'',speedTime:0,
     flashTime:0,hit:new Set(),coins:new Set(),questionChoices:[],hintShown:false,
     best:readStore(BEST_SAVE)||{},saved:null,sound:false,saveCounter:0,
-    finalOutcome:'',lastResultCorrect:false,focusBeforeDialog:null,catchElapsed:0
+    finalOutcome:'',lastResultCorrect:false,focusBeforeDialog:null,catchElapsed:0,feedbackElapsed:0
   };
   data.saved=validSave(readStore(GAME_SAVE));
   data.sound=readStore(SOUND_SAVE)===true;
@@ -140,7 +141,7 @@
     data.progress=0;data.questionIndex=0;data.score=0;data.correct=0;data.gap=226;
     data.jump=0;data.vy=0;data.grounded=true;data.supportId=null;data.airJumps=0;data.falls=0;
     data.elapsed=0;data.worldClock=0;data.speedMode='';data.speedTime=0;
-    data.flashTime=0;data.catchElapsed=0;data.hit.clear();data.coins.clear();data.hintShown=false;
+    data.flashTime=0;data.catchElapsed=0;data.feedbackElapsed=0;data.hit.clear();data.coins.clear();data.hintShown=false;
     data.saveCounter=0;data.saved=null;
     deleteStore(GAME_SAVE);
   }
@@ -174,7 +175,7 @@
       if(pit)data.progress=pit.respawn;
       data.grounded=true;data.jump=0;data.vy=0;
     }
-    data.hintShown=false;data.saveCounter=0;
+    data.hintShown=false;data.feedbackElapsed=0;data.saveCounter=0;
     $(`menuPanel`).querySelector(`input[value="${data.difficulty}"]`).checked=true;
   }
   function show(phase,panelName=null){
@@ -187,6 +188,10 @@
     if(phase==='running'){
       canvas.setAttribute('tabindex','-1');
       canvas.focus({preventScroll:true});
+    }else if(phase==='feedback'){
+      requestAnimationFrame(()=>{
+        if(data.phase==='feedback')$('feedbackTitle').focus({preventScroll:true});
+      });
     }else if(name){
       const target=$(name).querySelector('button:not([hidden]), input:checked');
       if(target)requestAnimationFrame(()=>{
@@ -267,6 +272,7 @@
     const q=QUESTIONS[data.questionIndex];
     const correct=choice.correct;
     data.lastResultCorrect=correct;
+    data.feedbackElapsed=0;
     data.questionIndex++;
     if(correct){data.correct++;data.score+=100;data.speedMode='boost';data.speedTime=5;}
     else{data.speedMode='slow';data.speedTime=3;}
@@ -276,11 +282,13 @@
     $('feedbackSpeed').textContent=correct?'⚡ 5 MÁSODPERC GYORSÍTÁS · +100 PONT':'🐢 3 MÁSODPERC LASSÍTÁS';
     $('feedbackInfo').textContent=q.info;
     stopSpeech();show('feedback');
+    saveGame(); // A válasz eredménye böngészőfrissítésnél is megmarad.
     blip(correct?1000:280,correct?.14:.18,correct?'square':'sawtooth',correct?.028:.023);
     announce(correct?'Helyes válasz. Gyorsítás jár.':'Másik válasz volt helyes. Lassítást kapsz, de továbbmehetsz.');
   }
   function continueRun(){
     if(data.phase!=='feedback')return;
+    data.feedbackElapsed=0;
     show('running');
     saveGame();
   }
@@ -709,6 +717,13 @@
         show('lost');
         announce('Elkaptak! Választhatod az Újrapróbálom vagy a Főmenü gombot.');
       }
+    }else if(data.phase==='feedback'){
+      // A futás, üldöző és játékidő a visszajelzés alatt mozdulatlan.
+      // Háttérben lévő böngészőlapon nem indul magától a futás.
+      if(!document.hidden){
+        data.feedbackElapsed=Math.min(FEEDBACK_DURATION,data.feedbackElapsed+dt);
+        if(data.feedbackElapsed>=FEEDBACK_DURATION)continueRun();
+      }
     }else update(dt);
     ctx.save();
     if(data.phase==='caught'&&!reducedMotion){
@@ -729,9 +744,6 @@
     if(data.phase==='question'&&['1','2','3'].includes(event.key)){
       event.preventDefault();answer(Number(event.key)-1);return;
     }
-    if(data.phase==='feedback'&&event.key==='Enter'){
-      event.preventDefault();continueRun();return;
-    }
     if(event.key==='Escape'){
       if(data.phase==='running'){event.preventDefault();pause();}
       else if(data.phase==='paused'){event.preventDefault();unpause();}
@@ -744,7 +756,6 @@
 
   $('startBtn').addEventListener('click',startNew);
   $('resumeBtn').addEventListener('click',resumeSaved);
-  $('continueBtn').addEventListener('click',continueRun);
   $('retryBtn').addEventListener('click',startNew);
   $('backBtn').addEventListener('click',toMenu);
   $('jumpBtn').addEventListener('pointerdown',(e)=>{e.preventDefault();jump();});
@@ -776,7 +787,7 @@
 
   // Visszaellenőrzésre alkalmas, kizárólag olvasható státuszinformáció.
   Object.defineProperty(window,'idoFutamStatus',{get:()=>Object.freeze({
-    phase:data.phase,version:'1.3.0',questions:QUESTIONS.length,answered:data.questionIndex,
+    phase:data.phase,version:'1.3.1',questions:QUESTIONS.length,answered:data.questionIndex,
     progress:Math.round(data.progress),score:data.score,correct:data.correct,
     gap:Math.round(data.gap),difficulty:data.difficulty,obstacles:OBSTACLES.length,
     platforms:PLATFORMS.length,pits:PITS.length,falls:data.falls,

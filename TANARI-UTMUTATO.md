@@ -18,3 +18,7 @@
 **Értékelés:** külön értékeld a történelmi válaszokat és az ügyességet; ne a futam során elért sebesség legyen a tantárgyi tudás mércéje.
 
 **Pedagógiai óvatosság:** a fiktív üldözés nem mutathatja be történelmi áldozatok sorsát választások következményeként. A holokauszt fogalomkérdéséhez rövid, tiszteletteljes megbeszélést ajánlunk. Egyéni szenzoros, érzelmi és olvasási igények: nem ismertek, megfigyelést igényelnek.
+
+## v1.3.1 – Válasz utáni folytatás
+
+A válasz megjelölése után a játék önállóan visszatér a futáshoz, **3 másodpercnyi** visszajelzést követően. Nincs szükség Enterre. A kérdés megválaszolásához továbbra sincs időkorlát; közben minden mozgás áll. A 3 másodperc rövid visszajelzéshez elegendő, részletes megbeszéléshez érdemes a játékot utólag megszakítani, vagy tanári segítséggel feldolgozni a fogalmat.

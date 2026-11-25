@@ -1,36 +1,26 @@
-# Menekülés a diktátor elől! – v1.3.0
+# Menekülés a diktátor elől! – v1.3.1
 
-**GitHub Pages-kompatibilis 2D történelmi pixelplatformjáték (TANAK 8.)**
+GitHub Pages-kompatibilis, offline is használható (letöltés után) történelmi pixelplatformjáték TANAK 8. osztály számára.
 
-## Újdonság: „Elkaptak!” vereségjelenet
+## A v1.3.1 újdonsága
 
-Ha az üldöző eléri a karaktert, a pálya **azonnal megáll**. A játék 0,4 másodperces piros villanást és enyhe, fokozatosan megszűnő kamerarázást mutat, valamint – ha a „Hang: be” aktív – rövid, háromhangos retro vereséghangot játszik. **Az elkapástól számított 1 másodperc után** megjelenik a panel:
+**A történelmi válasz után nem kell Entert nyomni vagy továbblépésre kattintani.**
 
-- **Elkaptak!**
-- **Hitler utolért, a küldetés megszakadt.**
-- **Újrapróbálom** / **Főmenü**
+- A tanuló kiválasztja a választ (egérrel, érintéssel, vagy az 1/2/3 billentyűvel).
+- A játék 3 másodpercig mutatja a helyes/hibás visszajelzést és a magyarázatot.
+- Ezután a futás automatikusan folytatódik; a 3 másodperc alatt a pálya, az üldöző és a játékidő áll.
+- Háttérbe került lapon a visszajelzés nem lép át automatikusan futásba, a megnyitott lapra visszatérve folytatja.
+- A válasz rögtön elmentődik a böngészőben, hogy véletlen oldalfrissítés se törölje.
 
-Csökkentett mozgás beállításnál a kamerarázás kimarad. A hang kikapcsolva marad, ha a felhasználó ezt korábban választotta. Nincs külső hang- vagy képfájl; a hangot a böngésző generálja.
+## Változatlanul megmaradt
 
-## Megőrzött elemek
+- 10 történelmi kérdés és 3 nehézségi szint.
+- 33 platform, 10 szakadék és 22 ugróakadály.
+- 5 másodperc turbó helyes válasznál / 3 másodperc lassítás hibásnál.
+- Piros elkapási effekt, hangbeállítás, rekordok, helyi mentések.
+- Visszafelé kompatibilis v1–v3 mentésformátum.
+- Az eredeti, kizárólag helyi adatkezelés; külső függőségek és regisztráció nélkül.
 
-- 10 változatlan történelmi kérdés, 3 nehézségi szint
-- 33 platform, 10 szakadék, 22 láda/hordó
-- teljes megállás kérdés és visszajelzés alatt
-- 5 mp turbó / 3 mp lassítás, pontok, rekordok
-- ugrás billentyűzetről vagy mobilról; könnyű módban dupla ugrás
-- böngészőn belüli mentések és hangbeállítás ugyanazokkal a kulcsokkal:
-  `idofutam_mentes_v1`, `idofutam_rekordok_v1`, `idofutam_hang_v1`
-- v1–v3 mentésforma támogatása
+**Szükséges fájlok:** `index.html`, `styles.css`, `game.js`, `questions.js` a repository gyökerébe.
 
-## Fájlok
-
-`index.html`, `styles.css`, `game.js`, `questions.js` – a játék működéséhez szükséges fájlok; mind a repository főmappájába kerüljenek.
-
-`GITHUB-FRISSITES.md`, `CHANGELOG.md`, `TESZTEREDMENYEK.md` – útmutató és ellenőrzések.
-
-## Technikai háttér
-
-Nincsenek külső csomagok, adatbázisok, API-k vagy fiókok. A játék személyes adatot nem gyűjt. A pixelvilág és a menekülés fiktív: a történelmi üldözöttek sorsát nem szimulálja.
-
-**Forrás:** a korábban kiadott **v1.2.0** helyi forráskódjára épül. A nyilvános GitHub-repository pillanatnyi fájljai a jelen környezetből nem voltak beolvashatók. Feltöltés előtt készíts biztonsági mentést.
+**Alap:** a korábban átadott helyi v1.3.0 (az élő GitHub-forrás a mostani környezetből nem volt elérhető). A változtatás kizárólag az automatikus folytatásra és az ezt kísérő visszajelzésre irányul. Az éles GitHub Pages telepítést feltöltés után lehet ellenőrizni.

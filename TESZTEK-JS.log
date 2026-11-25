@@ -3,6 +3,8 @@ OK: kérdések továbbra is 1000 és 1350 egységenként
 OK: platformokra való ugrás és valódi gravitáció
 OK: könnyű módban dupla ugrás, normál/hard módban nincs
 OK: kérdés és magyarázat alatt a szereplők, platformok és az idő megáll
+OK: automatikus továbblépés 3 másodperc visszajelzés után Enter nélkül
+OK: hibás válasz után is automatikus továbblépés, egyetlen válaszbeszámítással
 OK: mentésből v1 és v2 is megmarad
 OK: szakadékba eséskor mentő visszahelyezés és valós büntetés
 OK: mozgó platform fizikailag mozog, de kérdésnél megáll

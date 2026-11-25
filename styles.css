@@ -36,3 +36,7 @@ footer{display:flex;justify-content:space-between;gap:12px;border-top:1px solid 
 .end-dialog.loss-dialog .dialog-tag{color:#ffc0c7}
 .end-dialog.loss-dialog h2{color:#ffe5e8}
 .end-dialog.loss-dialog .end-illustration{filter:grayscale(.2)}
+
+/* v1.3.1: automatikus, további billentyű nélkül folytatódó kérdés-visszajelzés */
+.feedback-auto{margin:15px auto 0;max-width:390px;padding:10px 12px;border:1px solid #587aa3;background:#213859;color:#ecf5ff;font-weight:800;font-size:13px;line-height:1.55}
+.feedback-dialog #feedbackTitle:focus{outline:none}

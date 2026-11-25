@@ -1,20 +1,18 @@
 [
   {
-    "device": "desktop",
-    "gotLoss": true,
-    "worldFrozen": true,
-    "panelDelay": true,
-    "retry": true,
-    "menu": true,
-    "errors": []
+    "name": "desktop: helyes válasz + 3 másodperces automatikus folytatás; Enter nem szükséges",
+    "passed": true
   },
   {
-    "device": "mobile",
-    "gotLoss": true,
-    "worldFrozen": true,
-    "panelDelay": true,
-    "retry": true,
-    "menu": true,
-    "errors": []
+    "name": "desktop: hibás válasz + háttérben biztonságos várakozás",
+    "passed": true
+  },
+  {
+    "name": "mobile: helyes válasz + 3 másodperces automatikus folytatás; Enter nem szükséges",
+    "passed": true
+  },
+  {
+    "name": "mobile: hibás válasz + háttérben biztonságos várakozás",
+    "passed": true
   }
 ]
