@@ -1,0 +1,14 @@
+OK: 10 eredeti kérdés és 22 láda változatlan
+OK: kérdések továbbra is 1000 és 1350 egységenként
+OK: platformokra való ugrás és valódi gravitáció
+OK: könnyű módban dupla ugrás, normál/hard módban nincs
+OK: kérdés és magyarázat alatt a szereplők, platformok és az idő megáll
+OK: mentésből v1 és v2 is megmarad
+OK: szakadékba eséskor mentő visszahelyezés és valós büntetés
+OK: mozgó platform fizikailag mozog, de kérdésnél megáll
+OK: régi rekordkulcs és v3 levegőbeli mentés megőrzése
+OK: helytelen válasz 3 mp lassítást, helyes 5 mp turbót ad
+OK: easy: 10 kérdés és teljes platformpálya szimulált végigjátszása
+OK: normal: 10 kérdés és teljes platformpálya szimulált végigjátszása
+OK: hard: 10 kérdés és teljes platformpálya szimulált végigjátszása
+OK: ugrás gomb mobil pointerdown után nem aktivál újra kattintáskor

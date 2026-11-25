@@ -1,21 +1,19 @@
 # Változásnapló
 
-## v1.1.0 – 2026. november 25.
+## v1.2.0 – Pixelplatformok (2026. november 25.)
 
-- Az akadályok többé nem járhatók át automatikusan: az ugrás kötelező, ütközéskor a karakter megtorpan.
-- 22 egyértelmű ugróakadály, vizuális „↑ UGORJ!” figyelmeztetés.
-- Ritkábban érkező kérdések: első 1000, utána 1350 pályaegységenként (régen 370/520).
-- Régi v1 mentések automatikus átvezetése a hosszabb pályára; pontok, kérdések és rekordok megtartása.
-- Mind a 10 kérdés és a három nehézség megmaradt; nincs külső függőség.
-- GitHub gyorsítótárazás ellen verziózott hivatkozások a főoldalon.
+- **33 magasabb platform** 11 ügyességi szakaszban; fokozatos tanulás az első szakasztól.
+- **10 valódi szakadék**; leeséskor a szakasz biztonságos kezdőpontjáról folytatható, pont- és előnyveszteséggel.
+- **Mozgó platformok** a későbbi szakaszokon.
+- Új fizika: gravitáció, platformra érkezés és platform tetejéről elugrás.
+- **Könnyű szinten dupla ugrás**, normál és kihívás fokozaton egy ugrás.
+- A mobilos UGRÁS gombnál nem keletkezik két ugrás egyetlen érintésből.
+- A 10 eredeti történelmi kérdés, a kérdés közbeni teljes megállás, a hosszabb szakaszok, a pontozás és a rekordok megmaradtak.
+- Mentés v3: a régi v1/v2 mentéseket is betölti, a szakadékok fölötti régi mentéseket biztonságos pontra helyezi.
+- CSS/JS verzióparaméterek frissítve, hogy ne a korábbi gyorsítótárazott fájlok töltődjenek be.
 
-## v1.0.0 – 2026-11-25
+## v1.1.0
+- 22 ugróakadály, hosszabb kérdések közötti futópálya.
 
-- Új, önálló GitHub Pages-kompatibilis pixelplatformjáték.
-- Eredeti, régi városokat idéző, alkonyati hátterek, rétegelt parallax mozgással.
-- Játékos, negatív diktátorfigura és fokozatos üldözés; akadályok és ugrás.
-- 10 történelmi kérdés; a 6. kérdés El-Alameinről szól.
-- Kérdés közbeni teljes megállítás; helyes válaszra turbó, hibásra lassítás.
-- 3 nehézségi szint, tipp, opcionális magyar felolvasás és hang.
-- Helyi félbehagyott futam és rekordmentés; mobilos gombok.
-- Nincs regisztráció, külső könyvtár, adatküldés vagy külső kép.
+## v1.0.0
+- Eredeti játék 10 kérdéssel, három nehézségi szinttel és helyi mentéssel.

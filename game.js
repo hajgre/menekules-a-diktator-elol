@@ -1,4 +1,4 @@
-/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.1.0
+/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.2.0
  * Külső könyvtár nélküli, eredeti canvas-pixelplatformjáték.
  * A játék világát csak a 'running' állapotban léptetjük.
  */
@@ -21,22 +21,46 @@
   const OLD_FINISH = 5880;
   const Q_POS = [1000,2350,3700,5050,6400,7750,9100,10450,11800,13150];
   const OBSTACLE_HEIGHT = [43,51,48];
+  const GRAVITY = 1750, JUMP_STRENGTH = 700;
   const checkpoints = [0,...Q_POS,FINISH];
   const OBSTACLES = checkpoints.slice(1).flatMap((end,section)=>{
     const start=checkpoints[section], length=end-start;
-    return [.30,.66].map((fraction,index)=>({
+    // A ládák a platformos pályarész ELŐTT és UTÁN helyezkednek el.
+    return [.10,.85].map((fraction,index)=>({
       x:Math.round(start+length*fraction),id:section*2+index,type:(section*2+index)%3
     }));
   });
-  // A kristályok az átugrott akadályok után, a levegőben érhetők el.
-  const CRYSTALS = OBSTACLES.map(ob=>({x:ob.x+64,id:ob.id}));
+  // 11 külön ügyességi szakasz: az első kettő oktató; a későbbiekben szakadék
+  // és fokozatosan mozgó platformok jelennek meg. Minden ugrás teljesíthető
+  // az alap futósebességgel és egyetlen jól időzített ugrással is.
+  const COURSES = checkpoints.slice(1).map((end,section)=>{
+    const start=checkpoints[section], first=section===0?280:390;
+    const platforms=[
+      {id:section*3,x:start+first,w:175,y:GROUND-72,move:0,phase:section*.7},
+      {id:section*3+1,x:start+first+190,w:170,y:GROUND-94,move:section>=4?22:0,phase:section*.7+1},
+      {id:section*3+2,x:start+first+395,w:235,y:GROUND-66,move:section>=7?29:0,phase:section*.7+2}
+    ];
+    const pit=section>=1?{id:section,x:start+first+155,w:455,respawn:start+first-133}:null;
+    return {section,platforms,pit};
+  });
+  const PLATFORMS = COURSES.flatMap(c=>c.platforms);
+  const PITS = COURSES.map(c=>c.pit).filter(Boolean);
+  function platformRect(p,time){
+    const offset=p.move?Math.sin(time*1.25+p.phase)*p.move:0;
+    const bob=p.move?Math.cos(time*1.25+p.phase)*9:0;
+    return {id:p.id,x:p.x+offset,w:p.w,y:p.y+bob,move:p.move};
+  }
+  const CRYSTALS = [
+    ...OBSTACLES.map(ob=>({x:ob.x+65,id:ob.id,y:GROUND-100})),
+    ...COURSES.map((course,i)=>({x:course.platforms[1].x+95,id:OBSTACLES.length+i,y:GROUND-158}))
+  ];
   const GAME_SAVE = 'idofutam_mentes_v1';
   const BEST_SAVE = 'idofutam_rekordok_v1';
   const SOUND_SAVE = 'idofutam_hang_v1';
   const LEVELS = {
-    easy:{base:202,chaser:164,hit:24,label:'Könnyű'},
-    normal:{base:202,chaser:181,hit:36,label:'Normál'},
-    hard:{base:202,chaser:194,hit:45,label:'Kihívás'}
+    easy:{base:202,chaser:164,hit:24,label:'Könnyű',airJumps:1,fallCost:34},
+    normal:{base:202,chaser:181,hit:36,label:'Normál',airJumps:0,fallCost:48},
+    hard:{base:202,chaser:194,hit:45,label:'Kihívás',airJumps:0,fallCost:60}
   };
   const PANELS = ['menuPanel','questionPanel','feedbackPanel','endPanel','pausePanel'];
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -50,7 +74,7 @@
 
   const data = {
     phase:'menu',difficulty:'easy',progress:0,questionIndex:0,score:0,correct:0,
-    gap:226,jump:0,vy:0,elapsed:0,worldClock:0,speedMode:'',speedTime:0,
+    gap:226,jump:0,vy:0,grounded:true,supportId:null,airJumps:0,falls:0,elapsed:0,worldClock:0,speedMode:'',speedTime:0,
     flashTime:0,hit:new Set(),coins:new Set(),questionChoices:[],hintShown:false,
     best:readStore(BEST_SAVE)||{},saved:null,sound:false,saveCounter:0,
     finalOutcome:'',lastResultCorrect:false,focusBeforeDialog:null
@@ -75,19 +99,25 @@
   }
   const announce=(msg)=>{$('announcer').textContent=msg;};
   function validSave(s){
-    if(!s || ![1,2].includes(s.version) || !LEVELS[s.difficulty] || !Number.isFinite(s.progress) ||
+    if(!s || ![1,2,3].includes(s.version) || !LEVELS[s.difficulty] || !Number.isFinite(s.progress) ||
        !Number.isInteger(s.questionIndex) || !near(s.questionIndex,0,10) ||
        !near(s.progress,0,s.version===1?OLD_FINISH:FINISH) || !Number.isFinite(s.score) ||
        !Number.isFinite(s.gap) || !near(s.gap,45,285) ||
        !Number.isInteger(s.correct) || !near(s.correct,0,10) || s.correct>s.questionIndex ||
        !Number.isFinite(s.elapsed) || !near(s.elapsed,0,36000) ||
        !Array.isArray(s.hit) || !Array.isArray(s.coins)) return null;
+    if(s.version===3 && (!Number.isFinite(s.jump) || !near(s.jump,-700,550) ||
+       !Number.isFinite(s.vy) || !near(s.vy,-1100,2400) ||
+       typeof s.grounded!=='boolean' || !Number.isInteger(s.airJumps) ||
+       !near(s.airJumps,0,1) || !Number.isInteger(s.falls) || !near(s.falls,0,999)))return null;
     return s;
   }
   function snapshot(){
-    return {version:2,difficulty:data.difficulty,progress:data.progress,
+    return {version:3,difficulty:data.difficulty,progress:data.progress,
       questionIndex:data.questionIndex,score:data.score,correct:data.correct,
       gap:data.gap,elapsed:data.elapsed,worldClock:data.worldClock,
+      jump:data.jump,vy:data.vy,grounded:data.grounded,supportId:data.supportId,
+      airJumps:data.airJumps,falls:data.falls,
       hit:[...data.hit],coins:[...data.coins],speedMode:data.speedMode,
       speedTime:data.speedTime};
   }
@@ -105,7 +135,8 @@
   function resetRun(difficulty){
     data.difficulty=LEVELS[difficulty]?difficulty:'easy';
     data.progress=0;data.questionIndex=0;data.score=0;data.correct=0;data.gap=226;
-    data.jump=0;data.vy=0;data.elapsed=0;data.worldClock=0;data.speedMode='';data.speedTime=0;
+    data.jump=0;data.vy=0;data.grounded=true;data.supportId=null;data.airJumps=0;data.falls=0;
+    data.elapsed=0;data.worldClock=0;data.speedMode='';data.speedTime=0;
     data.flashTime=0;data.hit.clear();data.coins.clear();data.hintShown=false;
     data.saveCounter=0;data.saved=null;
     deleteStore(GAME_SAVE);
@@ -123,12 +154,23 @@
     data.difficulty=s.difficulty;data.progress=s.version===1?migrateOldProgress(s):s.progress;
     data.questionIndex=s.questionIndex;
     data.score=Math.max(0,Math.round(s.score));data.correct=s.correct;
-    data.gap=clamp(s.gap,48,275);data.jump=0;data.vy=0;data.elapsed=s.elapsed;
+    data.gap=clamp(s.gap,48,275);data.jump=s.version===3?s.jump:0;
+    data.vy=s.version===3?s.vy:0;data.grounded=s.version===3?s.grounded:true;
+    data.supportId=s.version===3&&Number.isInteger(s.supportId)?s.supportId:null;
+    data.airJumps=s.version===3?s.airJumps:0;data.falls=s.version===3?s.falls:0;
+    data.elapsed=s.elapsed;
     data.worldClock=s.worldClock||0;data.speedMode=s.speedMode||'';
     data.speedTime=clamp(s.speedTime||0,0,5);
     // Régi pályáról átvett tárgyak/akadályok helyei már nem egyeznek, a pontokat megtartjuk.
     data.hit=new Set((s.version===1?[]:s.hit).filter(id=>Number.isInteger(id)&&near(id,0,OBSTACLES.length-1)));
     data.coins=new Set((s.version===1?[]:s.coins).filter(id=>Number.isInteger(id)&&near(id,0,CRYSTALS.length-1)));
+    // A régi v1/v2 mentéseket megőrizzük, de nem kezdjük a játékost
+    // váratlanul egy, az előző pályán még nem létező szakadék fölött.
+    if(s.version!==3){
+      const pit=PITS.find(p=>data.progress>=p.x && data.progress<=p.x+p.w);
+      if(pit)data.progress=pit.respawn;
+      data.grounded=true;data.jump=0;data.vy=0;
+    }
     data.hintShown=false;data.saveCounter=0;
     $(`menuPanel`).querySelector(`input[value="${data.difficulty}"]`).checked=true;
   }
@@ -166,9 +208,13 @@
     show('menu');updateSavedUI();
   }
   function jump(){
-    if(data.phase!=='running'||data.jump<0)return;
-    data.vy=-585;data.jump=-.1;
-    blip(470,.08);
+    if(data.phase!=='running')return;
+    const extraAllowed=!data.grounded && data.airJumps<LEVELS[data.difficulty].airJumps;
+    if(!data.grounded&&!extraAllowed)return;
+    if(!data.grounded)data.airJumps++;
+    data.grounded=false;data.supportId=null;
+    data.vy=-JUMP_STRENGTH;data.jump-=1;
+    blip(extraAllowed?730:470,.08);
   }
   function pause(){
     if(data.phase!=='running')return;
@@ -290,47 +336,88 @@
     announce(outcome==='won'?'Sikerült. Elérted a célt.':'Az üldöző utolért. Újra próbálhatod.');
   }
 
+  function inPit(x){return PITS.find(p=>x>=p.x && x<p.x+p.w)||null;}
+  function feetY(){return GROUND+data.jump;}
+  function fallingIntoPit(pit){
+    const cfg=LEVELS[data.difficulty];
+    data.falls++;data.gap=Math.max(0,data.gap-cfg.fallCost);
+    data.score=Math.max(0,data.score-35);data.flashTime=.45;
+    data.progress=pit.respawn;data.jump=0;data.vy=0;
+    data.grounded=true;data.supportId=null;data.airJumps=0;
+    blip(190,.2,'sawtooth',.02);
+    announce('A szakadékba estél! Újrapróbálhatod a platformokat. Az üldöző közelebb került.');
+  }
   function update(dt){
     if(data.phase!=='running')return;
     const config=LEVELS[data.difficulty];
     const speed=data.speedMode==='boost'?302:data.speedMode==='slow'?154:config.base;
     data.worldClock+=dt;data.elapsed+=dt;
     if(data.speedTime>0){data.speedTime-=dt;if(data.speedTime<=0){data.speedTime=0;data.speedMode='';}}
-    if(data.jump<0||data.vy!==0){
-      data.jump+=data.vy*dt;
-      data.vy+=1560*dt;
-      if(data.jump>=0){data.jump=0;data.vy=0;}
-    }
     if(data.flashTime>0)data.flashTime=Math.max(0,data.flashTime-dt);
     let nextProgress=data.progress+speed*dt;
+    const oldFeet=feetY();
+    const platforms=PLATFORMS.map(p=>platformRect(p,data.worldClock));
+    // Valódi emelt platformon való mozgás: az alátámasztás elfogyhat,
+    // az új ugrást a platform tetejéről indíthatja a játékos.
+    if(data.grounded && data.supportId!==null){
+      const support=platforms.find(p=>p.id===data.supportId);
+      if(support && nextProgress>=support.x-7 && nextProgress<=support.x+support.w+7){
+        data.jump=support.y-GROUND;
+      }else{data.grounded=false;data.supportId=null;data.vy=Math.max(0,data.vy);}
+    }
+    if(data.grounded && data.supportId===null && inPit(nextProgress)){
+      data.grounded=false;data.vy=0;
+    }
+    // A korábbi ugróakadályok megmaradnak, de a platform felett át lehet futni.
     for(const ob of OBSTACLES){
       const entry=ob.x-44;
-      // Az akadály ELEJÉN megtorpan a karakter, amíg nem ugrik elég magasra.
-      // Ezzel nem lehet egyszerűen átfutni rajta, de helyből újra megpróbálható az ugrás.
-      if(data.progress<=entry+.001 && nextProgress>=entry && data.jump>-(OBSTACLE_HEIGHT[ob.type]+7)){
+      if(data.progress<=entry+.001 && nextProgress>=entry && feetY()>GROUND-(OBSTACLE_HEIGHT[ob.type]+7)){
         nextProgress=entry;
         if(!data.hit.has(ob.id)){
           data.hit.add(ob.id);data.gap=Math.max(0,data.gap-config.hit);
           data.score=Math.max(0,data.score-15);data.flashTime=.33;
           blip(150,.11,'sawtooth',.02);
-          announce('Megálltál az akadálynál! Nyomd meg az UGRÁS gombot a továbbhaladáshoz.');
+          announce('Akadály! Ugorj át rajta a folytatáshoz.');
         }
         break;
       }
     }
-    // Megtorpanáskor az üldöző akkor is közeledik, ha a karakter nem halad előre.
     const actualSpeed=dt>0?(nextProgress-data.progress)/dt:0;
+    const oldProgress=data.progress;
     data.progress=nextProgress;
+    if(!data.grounded){
+      data.jump+=data.vy*dt+.5*GRAVITY*dt*dt;
+      data.vy+=GRAVITY*dt;
+      // Csak felülről lehet a platformra érkezni, a levegőben nem állhatunk meg.
+      if(data.vy>=0){
+        const possible=platforms.filter(p=>data.progress>=p.x-9&&data.progress<=p.x+p.w+9&&
+          oldFeet<=p.y+11&&feetY()>=p.y);
+        if(possible.length){
+          const landing=possible.sort((a,b)=>a.y-b.y)[0];
+          data.jump=landing.y-GROUND;data.vy=0;data.grounded=true;
+          data.supportId=landing.id;data.airJumps=0;
+          blip(370,.028);
+        }else if(!inPit(data.progress) && oldFeet<=GROUND+3&&feetY()>=GROUND){
+          data.jump=0;data.vy=0;data.grounded=true;
+          data.supportId=null;data.airJumps=0;
+        }
+      }
+    }
+    if(feetY()>H+48){
+      const pit=PITS.find(p=>oldProgress>=p.x-30&&oldProgress<=p.x+p.w+120)||
+        PITS.find(p=>data.progress>=p.x-30&&data.progress<=p.x+p.w+120);
+      if(pit)fallingIntoPit(pit);
+      else{data.jump=0;data.vy=0;data.grounded=true;data.supportId=null;}
+    }
     data.gap=clamp(data.gap+(actualSpeed-config.chaser)*dt,0,275);
     for(const c of CRYSTALS){
-      if(!data.coins.has(c.id) && Math.abs(c.x-data.progress)<26 && data.jump< -52){
+      if(!data.coins.has(c.id) && Math.abs(c.x-data.progress)<25 && Math.abs(feetY()-c.y)<56){
         data.coins.add(c.id);data.score+=30;blip(1170,.09);announce('Időkristály: plusz 30 pont.');
       }
     }
     if(data.gap<=46){result('lost');return;}
     if(data.questionIndex<QUESTIONS.length && data.progress>=Q_POS[data.questionIndex]){
-      data.progress=Q_POS[data.questionIndex];
-      showQuestion();return;
+      data.progress=Q_POS[data.questionIndex];showQuestion();return;
     }
     if(data.progress>=FINISH && data.questionIndex===QUESTIONS.length){
       data.progress=FINISH;result('won');return;
@@ -442,6 +529,20 @@
       rect(x+15,GROUND+92,36,5,'#454b65');
     }
     rect(0,H-15,W,15,'#202b46');
+    // A szakadékok nem díszletek: alattuk NINCS járható talaj.
+    for(const pit of PITS){
+      const x=HERO_X+pit.x-data.progress;
+      if(x>W+20||x+pit.w<-20)continue;
+      rect(x,GROUND, pit.w,H-GROUND,'#10182c');
+      rect(x,GROUND+7,pit.w,10,'#29304b');
+      rect(x,GROUND+32,pit.w,3,'#4b3d5b');
+      rect(x-8,GROUND-4,10,19,'#f1a76a');
+      rect(x+pit.w-2,GROUND-4,10,19,'#f1a76a');
+      for(let k=0;k<Math.ceil(pit.w/58);k++){
+        const dx=x+18+k*58;
+        rect(dx,GROUND+48+Math.round(Math.sin(data.worldClock*2+k)*5),29,4,'#45587b');
+      }
+    }
   }
   function obstacle(x,y,type){
     const bx=Math.round(x-23);
@@ -459,6 +560,18 @@
     }
     rect(bx-4,y,58,6,'#243144');
   }
+  function drawPlatform(p){
+    const x=HERO_X+p.x-data.progress;
+    if(x+p.w<-20||x>W+20)return;
+    rect(x,p.y,p.w,16,p.move?'#8ddbd5':'#d3bfa6');
+    rect(x+4,p.y+4,p.w-8,8,p.move?'#5c9ea8':'#b98f78');
+    rect(x+7,p.y+15,p.w-14,16,p.move?'#465e88':'#6e6b7b');
+    for(let k=8;k<p.w-8;k+=30){
+      rect(x+k,p.y+18,21,4,'#4d506f');
+      if(p.move)rect(x+k+6,p.y-4,11,4,'#c2ffed');
+    }
+    rect(x+4,p.y-4,8,5,'#fff0b9');rect(x+p.w-12,p.y-4,8,5,'#fff0b9');
+  }
   function crystal(x,y,t){
     const bob=Math.round(Math.sin(t*3+x*.04)*4);
     rect(x-9,y-16+bob,18,28,'#3a9fad');rect(x-5,y-22+bob,10,35,'#b9f9de');
@@ -473,12 +586,12 @@
     for(let k=0;k<8;k++)rect(x+10+k*9,GROUND-80,5,80,'#8db6b6');
   }
   function mainCharacter(x,feet,t,hero=true){
-    const run=hero && data.phase==='running' && data.jump===0;
+    const run=hero && data.phase==='running' && data.grounded;
     const stride=run?Math.sin(t*18)*10:0;
     const hop=run?Math.abs(Math.sin(t*18))*2:0;
     const px=Math.round(x),py=Math.round(feet-hop);
     // árnyék
-    if(hero){rect(px-19,GROUND+2,41,6,'#19263888');}else rect(px-17,GROUND+2,35,5,'#19263888');
+    if(hero&&data.grounded){rect(px-19,py+2,41,6,'#19263888');}else rect(px-17,GROUND+2,35,5,'#19263888');
     if(hero){
       // lábak
       rect(px-12,py-16+stride*.35,12,17,'#28395a');rect(px+3,py-16-stride*.35,12,17,'#263755');
@@ -510,6 +623,7 @@
   }
   function draw(){
     sky();town();middleGround();road();
+    PLATFORMS.map(p=>platformRect(p,data.worldClock)).forEach(drawPlatform);
     const camera=data.progress-HERO_X;
     // peronos feliratok és történelmi kérdésjelzők
     for(let i=0;i<Q_POS.length;i++){
@@ -531,6 +645,20 @@
       if(near(x,-70,1000))obstacle(x,GROUND,ob.type);
     }
     if(data.progress>FINISH-950){const x=HERO_X+FINISH-data.progress;if(near(x,-150,1040))gate(x);}
+    // Pályajelzés a következő többszintes ugrássorozat előtt.
+    if(data.phase==='running'){
+      const upcoming=COURSES.find(c=>{
+        const dx=c.platforms[0].x-data.progress;
+        return dx>0&&dx<250;
+      });
+      if(upcoming){
+        const dx=upcoming.platforms[0].x-data.progress;
+        const x=HERO_X+dx;
+        rect(x-74,GROUND-232,148,30,'#244e75');
+        rect(x-74,GROUND-232,148,3,'#ffe5a3');
+        textAt('↑ PLATFORMOK',x,GROUND-216,'bold 18px monospace','#f6f0cf','center');
+      }
+    }
     // Közeledő akadály jól látható, előre jelzett ugrásfeladattal.
     if(data.phase==='running'){
       const approaching=OBSTACLES.find(ob=>ob.x-data.progress>=0 && ob.x-data.progress<300);
@@ -589,7 +717,7 @@
   $('retryBtn').addEventListener('click',startNew);
   $('backBtn').addEventListener('click',toMenu);
   $('jumpBtn').addEventListener('pointerdown',(e)=>{e.preventDefault();jump();});
-  $('jumpBtn').addEventListener('click',jump); // billentyűzetes aktiváláshoz
+  $('jumpBtn').addEventListener('click',(e)=>{if(e.detail===0)jump();}); // billentyűzetes aktiválás, nincs dupla touch-ugrás
   $('pauseBtn').addEventListener('click',pause);
   $('unpauseBtn').addEventListener('click',unpause);
   $('pauseMenuBtn').addEventListener('click',toMenu);
@@ -617,9 +745,11 @@
 
   // Visszaellenőrzésre alkalmas, kizárólag olvasható státuszinformáció.
   Object.defineProperty(window,'idoFutamStatus',{get:()=>Object.freeze({
-    phase:data.phase,version:'1.1.0',questions:QUESTIONS.length,answered:data.questionIndex,
+    phase:data.phase,version:'1.2.0',questions:QUESTIONS.length,answered:data.questionIndex,
     progress:Math.round(data.progress),score:data.score,correct:data.correct,
-    gap:Math.round(data.gap),difficulty:data.difficulty,obstacles:OBSTACLES.length
+    gap:Math.round(data.gap),difficulty:data.difficulty,obstacles:OBSTACLES.length,
+    platforms:PLATFORMS.length,pits:PITS.length,falls:data.falls,
+    grounded:data.grounded,heroHeight:Math.round(-data.jump)
   })});
 
   renderSoundButton();updateSavedUI();show('menu');updateHud();

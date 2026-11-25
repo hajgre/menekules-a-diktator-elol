@@ -1,59 +1,35 @@
-# MENEKÜLÉS A DIKTÁTOR ELŐL! – v1.1.0
+# MENEKÜLÉS A DIKTÁTOR ELŐL! – v1.2.0
 
-Színes, eredeti pixelgrafikás, oldalsó nézetes történelmi futókaland. TANAK 8. évfolyam számára. A II. világháború korai eseményeit és alapfogalmait gyakoroltatja **10 rövid kérdéssel**. A pálya és a figurák fiktívek: nem történelmi áldozatok menekülésének újrajátszása.
+**Eredeti 2D pixelplatformjáték** a II. világháborúról, TANAK 8. osztály számára. Nincs szükség regisztrációra, internetes API-ra vagy külső könyvtárra.
 
-## Indítás
+## Újdonságok
 
-A játékhoz internetkapcsolat a feltöltés után nem szükséges; nincs API-kulcs, adatbázis, külső könyvtár, fiók vagy külső kép/hang. A `index.html` fájlt böngészőben megnyitva, vagy GitHub Pages-en futtatva indul.
+- 11 platformos ügyességi szakasz, összesen **33 magasított platform**; a későbbi pályákon egyes platformok mozognak.
+- **10 szakadék**, melyeket a platformokon ugrálva kell áthidalni.
+- **22 láda/hordó** (a v1.1.0 akadályai), változatos ugrási lehetőségek.
+- Leeséskor biztonságos előző pontról lehet újra próbálkozni, de az üldöző közelebb jut, és pontlevonás történik.
+- Könnyű szinten egy második ugrás is lehetséges a levegőben. Normál és kihívás szinten egy ugrás jár elrugaszkodásonként.
+- 10 változatlan, történelmileg ellenőrzött rövid kérdés; kérdéskor **minden mozgás és időmérés megáll**, a válasz utáni ismertetőnél is.
+- Helyes válasz: 5 másodperc turbó, +100 pont. Hibás: 3 másodperc lassítás, továbbjutási lehetőséggel.
 
-## GitHub Pages – új repository
+## Irányítás
 
-1. Hozz létre egy **új, nyilvános repositoryt** a GitHubon, például `menekules-a-diktator-elol` néven. **A már működő IDŐUGRÁS repositoryt ne módosítsd.**
-2. A letöltött ZIP-et a számítógépeden **csomagold ki**, és a benne található fájlokat (`index.html`, `styles.css`, `game.js`, `questions.js`, dokumentációk) a repository **gyökérmappájába** töltsd fel (Add file → Upload files). **Ne a ZIP-et töltsd fel!**
-3. Kattints a `Commit changes` gombra.
-4. `Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: main → Folder: /(root) → Save`.
-5. Ha a repository neve `menekules-a-diktator-elol`, a várható cím: `https://hajgre.github.io/menekules-a-diktator-elol/`. Az oldal csak a tényleges közzététel után működik.
-6. Nyisd meg, majd ellenőrizd a startot és az első kérdést. A GitHub Pages késleltetve is frissülhet.
+Az automatikusan futó karaktert ugrással irányítod: **Szóköz, ↑, W**, illetve mobilon **UGRÁS**. Számítógépen 1/2/3 a válaszok, Enter a kérdés utáni folytatás, Esc a szünet.
 
-## Fájlok
+TIPP: az ugrást még a platform előtt indítsd! A platform tetejéről újabb ugrással juthatsz át a következőre. Könnyű fokozaton a levegőben még egyszer megnyomhatod az ugrást.
 
-| Fájl | Funkció |
-|---|---|
-| `index.html` | Játék képernyői, gombjai és szemantikusan felépített kezelőfelület |
-| `styles.css` | Reszponzív elrendezés, képernyőn látható szövegek |
-| `game.js` | Játékmenet, pixelrajz, ütközés, kérdések, pontozás, mentés |
-| `questions.js` | 10 történelmi kérdés és magyarázat; a válaszsorrend változó |
-| `TANARI-UTMUTATO.md` | Pedagógiai ajánlások |
-| `TESZTEREDMENYEK.md` | Ténylegesen lefuttatott ellenőrzések és korlátok |
-| `CHANGELOG.md` | Verziótörténet |
-| `GITHUB-FRISSITES.md` | Új verziók feltöltése és visszaállítás |
+## GitHub Pages – frissítés
 
-## Játékszabály
+Lásd a `GITHUB-FRISSITES.md` fájlt. Fő fájlok: `index.html`, `styles.css`, `game.js`, `questions.js`. **Az IDŐUGRÁS játékát ne módosítsd.**
 
-- A főhős automatikusan fut jobbra; ugrás: **Space**, **↑**, **W**, vagy telefonon **UGRÁS**.
-- A kérdések előtti és közötti futószakaszok hosszabbak (első kérdésig 1000 pályaegység, utána 1350 pályaegységenként).
-- 10 kérdés jelenik meg a kijelölt állomásoknál. **A teljes játékszimuláció megáll**, amíg a tanuló válaszol, és a válasz utáni magyarázatot elolvassa.
-- **Jó válasz:** 5 másodperc gyorsítás +100 pont; **rossz válasz:** 3 másodperc lassítás. Hibánál sincs végleges kiesés a kérdésből, a helyes információ megjelenik.
-- **22 kötelező ugróakadály:** a főhős az akadály előtt megáll, ha nem ugrott elég magasra. A továbbhaladáshoz meg kell nyomni az ugrás gombot. Egy-egy akadállyal való első ütközésnél az üldöző közelebb kerül, −15 pont. **Órakristály:** ugrással gyűjthető, +30 pont.
-- Ha az üldöző utolér, a futam véget ér; azonnali újrakezdés lehetséges.
-- 10 kérdés és a célkapu elérése után a játék eredményképernyővel zárul.
-- **Könnyű:** 2 válaszlehetőség, enyhébb üldözés, díjmentes tipp. **Normál:** 3 válaszlehetőség, tipp −10 pont. **Kihívás:** 3 válaszlehetőség, gyorsabb üldözés, tipp −10 pont.
-- **Szünet:** Escape vagy Szünet gomb; másik böngészőfülre váltáskor automatikus megállás.
-- Opcionális szintetizált hangok és kérdésfelolvasás. A felolvasás a böngésző magyar hangjától függ.
+## Mentés és adatvédelem
 
-## Adatvédelem és mentés
+A program a meglévő `idofutam_mentes_v1`, `idofutam_rekordok_v1` és `idofutam_hang_v1` böngészőtárhely-kulcsokat használja tovább. A mentés formátuma v3, a v1 és v2 mentésekből történő folytatás támogatott. Az összes adat **helyileg, a böngészőben** marad. Nem gyűjtünk személyes adatokat.
 
-A legjobb eredmény és a félbehagyott futam **kizárólag a böngésző helyi tárhelyére** (`localStorage`) kerül. Nem küldünk adatokat szerverre, nincs követőkód, regisztráció, tanulónév vagy statisztikagyűjtés. A félbehagyott futam külön törölhető a főoldalon; ez a rekordokat nem törli. A v1.0.0 régi mentéseit a v1.1.0 automatikusan átszámítja a hosszabb pályára, miközben a megválaszolt kérdéseket és a pontokat megtartja. A teljes böngészőadatok törlése a mentést is törli.
+## Történelmi keret
 
-## Szakmai megjegyzés
+Az üldöző karikatúraszerű negatív szereplő; a futópálya teljesen fiktív, **nem** a történelmi üldözöttek túlélésének szimulációja. A kérdések a már tanult tényeket ismétlik. A játék nem használja a holokauszt áldozatainak sorsát játékkockázatként.
 
-A náci diktatúrát megszemélyesítő pixeles üldöző egyértelműen negatív szereplő. A játék **nem** állítja, hogy a holokauszt áldozatai válaszokkal vagy ügyességgel elkerülhették volna az üldözést. A holokausztra vonatkozó egyetlen feladat fogalomfelismerés és rövid történeti magyarázat; a tényleges áldozatok sorsa nem játékelem. A foglalkozást rövid közös megbeszéléssel érdemes zárni.
+## Fejlesztői ellenőrzés
 
-## Technikai adatok
-
-- Verzió: **1.1.0**
-- Teljesen önálló statikus HTML/CSS/JS játék, 0 külső függőséggel
-- Reszponzív asztali és mobilos felület
-- Minden történelmi személynév a jóváhagyott listára korlátozott (a játékban csak Hitler szerepel név szerint)
-- A karakterek eredeti, Canvas API-val programozott pixelrajzok (nem Super Mario vagy más szerzői joggal védett játék grafikái)
-- A `index.html` CSS/JS hivatkozásai verzióparamétert tartalmaznak a böngésző gyorsítótárával kapcsolatos korábbi probléma elkerülésére
+A helyi JS- és böngészős tesztek eredményét a `TESZTEREDMENYEK.md` tartalmazza. Az éles GitHub Pages-t a feltöltés után külön ellenőrizni kell.

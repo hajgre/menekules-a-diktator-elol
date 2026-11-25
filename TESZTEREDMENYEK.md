@@ -1,33 +1,24 @@
-# Teszteredmények – v1.1.0
+# Tényleges ellenőrzések – v1.2.0
 
-2026. november 25.
+**Dátum:** 2026-11-25
 
-## Ezen kiadásban ténylegesen végzett ellenőrzések
+## Sikeres ellenőrzések
 
-A JavaScript-vezérlőt valódi JS futtatókörnyezetben, egy DOM/Canvas-helyettesítőteszttel futtattuk. A belső állapotot kizárólag a teszt memóriájában tettük elérhetővé, ez a tesztkapu **nem** része az átadott `game.js` fájlnak.
+- `node --check game.js` – JavaScript-szintaxis rendben.
+- Automatikus JS-szimuláció mindhárom nehézségi szinten: a 10 kérdés és 11 platformos szakasz végigjárható, **55 ugrás**, 33 platformra landolás, **0 szakadékba esés** a tesztbot pontos ugrásaival. A bot nem valós tanuló, hanem ellenőrzés.
+- 10 kérdés és 22 korábbi akadály száma változatlan.
+- Kérdéskor és magyarázat közben a játékidő és a platformok belső ideje sem halad.
+- Könnyű szinten dupla ugrás, normál és kihívás fokozaton csak egy ugrás.
+- Szándékos leeséskor büntetés és biztonságos újrakezdési pont; a megválaszolt kérdések száma megmarad.
+- Mozgó platformok helyzete ténylegesen változik a játékidővel.
+- Helyes válasz turbója és hibás válasz lassítása ellenőrizve.
+- Régi v1/v2 mentések betöltése; v3 levegőbeli mentés; meglévő böngészőtárhely-kulcsok változatlanok.
+- Mobilos érintés csak egy ugrást vált ki; billentyűzettel külön ugrás indítható.
+- **Valódi Chromium headless böngészőben** tesztelve: a játék indul, a menü megjelenik, desktop Space és mobil pointerdown ugrás működik; nem volt JavaScript-hiba. Képernyőképek: `preview-v120-menu-desktop.png`, `preview-v120-run-mobile.png`, `preview-v120-platform-course.png`.
 
-| Vizsgálat | Eredmény |
-|---|---|
-| `node --check` – `game.js`, `questions.js` | Sikeres |
-| Feladatok és akadályok: 10 kérdés, 22 akadály | Sikeres |
-| Első kérdés 1000, továbbiak 1350 pályaegységenként | Sikeres |
-| Akadály megállítja a futót, amíg nem ugrik | Sikeres |
-| Egy akadálynál egyszeri büntetés, ugrással továbblépés | Sikeres |
-| Teljes 10 kérdés és 22 akadály – könnyű | Sikeres |
-| Teljes 10 kérdés és 22 akadály – normál | Sikeres |
-| Teljes 10 kérdés és 22 akadály – kihívás | Sikeres |
-| Kérdés/megoldás közben a játékidő, haladás és üldözés nem változik | Sikeres |
-| Hibás válasz utáni három másodperces lassítás | Sikeres |
-| v1.0.0 mentés átváltása, pontok megtartása | Sikeres |
-| v1.1.0 mentés létrehozása és visszatöltése szimulált tárhelyről | Sikeres |
-| Ugrás gomb eseménykezelője | Sikeres |
+## Korlátok
 
-## Nem ellenőrzött részek
-
-- A Chromium grafikus böngészős tesztje a futtatási környezetben navigációs korlátozásba ütközött; így **nincs új v1.1.0-s képernyőképes validáció**. Az előző v1.0.0-s mobilos/asztali képernyőképeket nem tekintjük új tesztnek.
-- Fizikai telefon és Safari/Firefox alatt a frissített változatot nem próbáltuk ki.
-- A felolvasás tényleges hangkimenetét és a GitHub Pages éles HTTPS-es futását a feltöltés után kell ellenőrizni.
-
-## Ismert korlát
-
-Az ügyességi teljesítmény nem egyenlő a történelmi tudással. A megtorpanás és az üldöző miatti vereség a mozgásmechanikához tartozik; pedagógiai értékeléskor a kérdések helyességét külön érdemes figyelembe venni.
+- A programozott bot ismerte a pályát: a diákok tényleges teljesíthetősége pedagógiai próba során derül ki.
+- Fizikai telefonos és minden böngészőt lefedő teszt **nem** történt.
+- A GitHubon közzétett éles változat ellenőrzése még hátravan.
+- A nyilvános GitHub jelenlegi forrása nem volt közvetlenül elérhető; a korábban átadott v1.1.0 verzió szolgált kiindulásul.

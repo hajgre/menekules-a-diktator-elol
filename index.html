@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#111831">
   <meta name="description" content="Menekülés a diktátor elől! Színes, pixeles, 10 kérdéses történelmi platformjáték 8. osztályos tanulóknak.">
   <title>Menekülés a diktátor elől! – Történelmi futókaland</title>
-  <link rel="stylesheet" href="styles.css?v=1.1.0">
-  <script defer src="questions.js?v=1.1.0"></script>
-  <script defer src="game.js?v=1.1.0"></script>
+  <link rel="stylesheet" href="styles.css?v=1.2.0">
+  <script defer src="questions.js?v=1.2.0"></script>
+  <script defer src="game.js?v=1.2.0"></script>
 </head>
 <body>
   <div class="site-shell">
@@ -17,14 +17,14 @@
         <span class="brand-icon" aria-hidden="true">◈</span>
         <span><span class="brand-top">PIXEL · TÖRTÉNELEM</span><strong>IDŐFUTAM</strong></span>
       </a>
-      <span class="edition">TANAK 8. <span class="edition-dot">✦</span> v1.1.0</span>
+      <span class="edition">TANAK 8. <span class="edition-dot">✦</span> v1.2.0</span>
     </header>
 
     <main>
       <section class="intro">
         <div class="eyebrow"><span class="tiny-pixel"></span> 2D TÖRTÉNELMI KALAND</div>
         <h1>MENEKÜLÉS <span>A DIKTÁTOR</span> ELŐL!</h1>
-        <p>Az akadályokon át kell ugranod a továbbjutáshoz! Válaszolj a történelmi kérdésekre, és maradj az üldöző előtt! <strong>10 kérdés. Egy futam. Te döntesz.</strong></p>
+        <p>Ugorj fel a magas platformokra, és juss át a szakadékokon! Válaszolj a történelmi kérdésekre, és maradj az üldöző előtt! <strong>10 kérdés. Egy futam. Te döntesz.</strong></p>
       </section>
 
       <section class="play-area" aria-label="Játékterület">
@@ -35,7 +35,7 @@
           <div class="hud-stat chase-stat"><span class="hud-label">AZ ÜLDÖZŐ TÁVOLSÁGA</span><div class="chase-track" aria-label="Üldöző távolsága"><div class="chase-fill" id="chaseFill"></div></div><span id="chaseText">Távol</span></div>
         </div>
         <div class="canvas-stage" id="stage">
-          <canvas id="gameCanvas" width="960" height="540" aria-label="Oldalnézetes pixeljáték: a főhős automatikusan fut jobbra, az akadályokon ugorj át!"></canvas>
+          <canvas id="gameCanvas" width="960" height="540" aria-label="Oldalnézetes pixeljáték: ugrálj az emelt és mozgó platformokon, kerüld el a szakadékokat!"></canvas>
           <div class="canvas-stamp" id="canvasStamp" aria-hidden="true">1939 → 1943</div>
           <div class="speed-pill" id="speedPill" aria-live="polite"></div>
           <div class="overlay" id="overlay">
@@ -43,11 +43,11 @@
               <div class="dialog-tag">◈ KÜLDETÉS INDÍTÁSA</div>
               <div class="hero-glyph" aria-hidden="true"><span>🏃</span><span class="hero-lightning">⚡</span></div>
               <h2 id="menuTitle">FUSS, UGORJ, GONDOLKODJ!</h2>
-              <p>Hitler pixeles figurája üldöz. Ha utolér, vége a futamnak! A ládák és hordók előtt át kell ugranod, különben megtorpansz. A kérdéseknél minden megáll.</p>
+              <p>Hitler pixeles figurája üldöz. Ha utolér, vége a futamnak! Ugorj fel a platformokra, lépj tovább a mozgó lépcsőkön, és kerüld el a szakadékokat! A kérdéseknél minden megáll.</p>
               <div class="rule-strip"><span><b>✓</b> Jó válasz = gyorsítás</span><span><b>×</b> Hibás = lassítás</span></div>
               <fieldset class="difficulty-field"><legend>Válassz nehézséget:</legend>
-                <label class="difficulty-option"><input type="radio" name="difficulty" value="easy" checked><span><b>🌱 Könnyű</b><small>2 válasz · lassabb üldöző</small></span></label>
-                <label class="difficulty-option"><input type="radio" name="difficulty" value="normal"><span><b>⚡ Normál</b><small>3 válasz · átlagos tempó</small></span></label>
+                <label class="difficulty-option"><input type="radio" name="difficulty" value="easy" checked><span><b>🌱 Könnyű</b><small>2 válasz · mentő dupla ugrás</small></span></label>
+                <label class="difficulty-option"><input type="radio" name="difficulty" value="normal"><span><b>⚡ Normál</b><small>3 válasz · valódi platformugrások</small></span></label>
                 <label class="difficulty-option"><input type="radio" name="difficulty" value="hard"><span><b>🔥 Kihívás</b><small>3 válasz · gyorsabb üldöző</small></span></label>
               </fieldset>
               <div class="dialog-actions"><button id="startBtn" class="btn btn-primary btn-large">▶ JÁTÉK INDÍTÁSA</button><button id="resumeBtn" class="btn btn-muted" hidden>↻ MENTETT FUTAM FOLYTATÁSA</button></div>
@@ -99,12 +99,12 @@
       </section>
 
       <section class="support-grid" aria-label="Útmutató és eredmények">
-        <article class="info-card"><span class="section-label">01 / IRÁNYÍTÁS</span><h3>Hogyan játssz?</h3><div class="control-rows"><div><kbd>SPACE</kbd> <kbd>↑</kbd><span>Ugrás az akadályok felett</span></div><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Válaszadás a kérdéseknél</span></div><div><kbd>ESC</kbd><span>Játék szüneteltetése</span></div></div><p>A karakter automatikusan fut, de az akadálynál megáll, ha nem ugrasz át rajta. Telefonon használd a nagy <b>UGRÁS</b> gombot!</p></article>
-        <article class="info-card"><span class="section-label">02 / JÁTÉKSZABÁLY</span><h3>Válaszolj, és gyorsulj!</h3><div class="mini-rules"><p><span class="rule-icon good">✓</span><span>Jó válasz: <b>5 mp turbó</b>, +100 pont.</span></p><p><span class="rule-icon bad">×</span><span>Rossz válasz: <b>3 mp lassítás</b>, de továbbmehetsz.</span></p><p><span class="rule-icon blue">◆</span><span>Ugorj át a ládákon és hordókon! Ha nekimész, az üldöző közelebb jut. Gyűjts órakristályokat!</span></p></div></article>
+        <article class="info-card"><span class="section-label">01 / IRÁNYÍTÁS</span><h3>Hogyan játssz?</h3><div class="control-rows"><div><kbd>SPACE</kbd> <kbd>↑</kbd><span>Ugrás platformokra · könnyű szinten dupla ugrás</span></div><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Válaszadás a kérdéseknél</span></div><div><kbd>ESC</kbd><span>Játék szüneteltetése</span></div></div><p>A karakter automatikusan fut. A szakadékokhoz előre kell időzítened az ugrásokat; ha leesel, a szakasz elejéről próbálhatod újra. Könnyű szinten egy levegőben végzett második ugrás is segít. Telefonon használd az <b>UGRÁS</b> gombot!</p></article>
+        <article class="info-card"><span class="section-label">02 / JÁTÉKSZABÁLY</span><h3>Válaszolj, és gyorsulj!</h3><div class="mini-rules"><p><span class="rule-icon good">✓</span><span>Jó válasz: <b>5 mp turbó</b>, +100 pont.</span></p><p><span class="rule-icon bad">×</span><span>Rossz válasz: <b>3 mp lassítás</b>, de továbbmehetsz.</span></p><p><span class="rule-icon blue">◆</span><span>Ugorj a magas és mozgó platformokra, kerüld el a szakadékokat! Gyűjts órakristályokat!</span></p></div></article>
         <article class="info-card"><span class="section-label">03 / EREDMÉNY</span><h3>Legjobb futam</h3><div class="best-number" id="bestHome">Még nincs eredmény</div><p>Az eredmény és a félbehagyott futam ezen a készüléken tárolódik. Nem kell regisztrálni.</p><button id="resetSavedBtn" class="btn btn-reset" hidden>Mentett futam törlése</button></article>
       </section>
     </main>
-    <footer><span>© 2026 · Oktatási pixelkaland · v1.1.0</span><span>Külső adatküldés és hirdetések nélkül</span></footer>
+    <footer><span>© 2026 · Oktatási pixelkaland · v1.2.0</span><span>Külső adatküldés és hirdetések nélkül</span></footer>
     <div class="visually-hidden" role="status" aria-live="polite" id="announcer"></div>
   </div>
 </body>
