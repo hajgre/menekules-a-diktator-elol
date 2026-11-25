@@ -1,4 +1,4 @@
-/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.0.0
+/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.1.0
  * Külső könyvtár nélküli, eredeti canvas-pixelplatformjáték.
  * A játék világát csak a 'running' állapotban léptetjük.
  */
@@ -15,10 +15,21 @@
   const ctx = canvas.getContext('2d', {alpha:false});
   if (!ctx) { document.body.textContent = 'Ehhez a játékhoz Canvas-t támogató böngésző szükséges.'; return; }
   ctx.imageSmoothingEnabled = false;
-  const W = 960, H = 540, GROUND = 420, HERO_X = 274, FINISH = 5880;
-  const Q_POS = [370,890,1410,1930,2450,2970,3490,4010,4530,5050];
-  const OBSTACLES = [640,1130,1640,2180,2690,3200,3720,4250,4780,5480].map((x,i)=>({x,id:i,type:i%3}));
-  const CRYSTALS = [650,1140,1650,2190,2700,3210,3730,4260,4790,5490].map((x,i)=>({x,id:i}));
+  const W = 960, H = 540, GROUND = 420, HERO_X = 274, FINISH = 14550;
+  // Az eredeti 10 kérdés változatlan. Közöttük hosszabb ügyességi szakaszok vannak.
+  const OLD_Q_POS = [370,890,1410,1930,2450,2970,3490,4010,4530,5050];
+  const OLD_FINISH = 5880;
+  const Q_POS = [1000,2350,3700,5050,6400,7750,9100,10450,11800,13150];
+  const OBSTACLE_HEIGHT = [43,51,48];
+  const checkpoints = [0,...Q_POS,FINISH];
+  const OBSTACLES = checkpoints.slice(1).flatMap((end,section)=>{
+    const start=checkpoints[section], length=end-start;
+    return [.30,.66].map((fraction,index)=>({
+      x:Math.round(start+length*fraction),id:section*2+index,type:(section*2+index)%3
+    }));
+  });
+  // A kristályok az átugrott akadályok után, a levegőben érhetők el.
+  const CRYSTALS = OBSTACLES.map(ob=>({x:ob.x+64,id:ob.id}));
   const GAME_SAVE = 'idofutam_mentes_v1';
   const BEST_SAVE = 'idofutam_rekordok_v1';
   const SOUND_SAVE = 'idofutam_hang_v1';
@@ -64,9 +75,9 @@
   }
   const announce=(msg)=>{$('announcer').textContent=msg;};
   function validSave(s){
-    if(!s || s.version!==1 || !LEVELS[s.difficulty] || !Number.isFinite(s.progress) ||
+    if(!s || ![1,2].includes(s.version) || !LEVELS[s.difficulty] || !Number.isFinite(s.progress) ||
        !Number.isInteger(s.questionIndex) || !near(s.questionIndex,0,10) ||
-       !near(s.progress,0,FINISH) || !Number.isFinite(s.score) ||
+       !near(s.progress,0,s.version===1?OLD_FINISH:FINISH) || !Number.isFinite(s.score) ||
        !Number.isFinite(s.gap) || !near(s.gap,45,285) ||
        !Number.isInteger(s.correct) || !near(s.correct,0,10) || s.correct>s.questionIndex ||
        !Number.isFinite(s.elapsed) || !near(s.elapsed,0,36000) ||
@@ -74,7 +85,7 @@
     return s;
   }
   function snapshot(){
-    return {version:1,difficulty:data.difficulty,progress:data.progress,
+    return {version:2,difficulty:data.difficulty,progress:data.progress,
       questionIndex:data.questionIndex,score:data.score,correct:data.correct,
       gap:data.gap,elapsed:data.elapsed,worldClock:data.worldClock,
       hit:[...data.hit],coins:[...data.coins],speedMode:data.speedMode,
@@ -99,14 +110,25 @@
     data.saveCounter=0;data.saved=null;
     deleteStore(GAME_SAVE);
   }
+  function migrateOldProgress(s){
+    // Régi mentéseknél a teljesített kérdések száma alapján arányosan őrizzük a szakaszban megtett utat.
+    const i=s.questionIndex;
+    const oldStart=i===0?0:OLD_Q_POS[i-1];
+    const oldEnd=i===10?OLD_FINISH:OLD_Q_POS[i];
+    const newStart=checkpoints[i], newEnd=checkpoints[i+1];
+    const ratio=clamp((s.progress-oldStart)/(oldEnd-oldStart),0,1);
+    return clamp(newStart+(newEnd-newStart)*ratio,0,FINISH);
+  }
   function loadRun(s){
-    data.difficulty=s.difficulty;data.progress=s.progress;data.questionIndex=s.questionIndex;
+    data.difficulty=s.difficulty;data.progress=s.version===1?migrateOldProgress(s):s.progress;
+    data.questionIndex=s.questionIndex;
     data.score=Math.max(0,Math.round(s.score));data.correct=s.correct;
     data.gap=clamp(s.gap,48,275);data.jump=0;data.vy=0;data.elapsed=s.elapsed;
     data.worldClock=s.worldClock||0;data.speedMode=s.speedMode||'';
     data.speedTime=clamp(s.speedTime||0,0,5);
-    data.hit=new Set(s.hit.filter(id=>Number.isInteger(id)&&near(id,0,OBSTACLES.length-1)));
-    data.coins=new Set(s.coins.filter(id=>Number.isInteger(id)&&near(id,0,CRYSTALS.length-1)));
+    // Régi pályáról átvett tárgyak/akadályok helyei már nem egyeznek, a pontokat megtartjuk.
+    data.hit=new Set((s.version===1?[]:s.hit).filter(id=>Number.isInteger(id)&&near(id,0,OBSTACLES.length-1)));
+    data.coins=new Set((s.version===1?[]:s.coins).filter(id=>Number.isInteger(id)&&near(id,0,CRYSTALS.length-1)));
     data.hintShown=false;data.saveCounter=0;
     $(`menuPanel`).querySelector(`input[value="${data.difficulty}"]`).checked=true;
   }
@@ -272,8 +294,6 @@
     if(data.phase!=='running')return;
     const config=LEVELS[data.difficulty];
     const speed=data.speedMode==='boost'?302:data.speedMode==='slow'?154:config.base;
-    data.progress+=speed*dt;
-    data.gap=clamp(data.gap+(speed-config.chaser)*dt,0,275);
     data.worldClock+=dt;data.elapsed+=dt;
     if(data.speedTime>0){data.speedTime-=dt;if(data.speedTime<=0){data.speedTime=0;data.speedMode='';}}
     if(data.jump<0||data.vy!==0){
@@ -282,13 +302,26 @@
       if(data.jump>=0){data.jump=0;data.vy=0;}
     }
     if(data.flashTime>0)data.flashTime=Math.max(0,data.flashTime-dt);
+    let nextProgress=data.progress+speed*dt;
     for(const ob of OBSTACLES){
-      if(!data.hit.has(ob.id) && Math.abs(ob.x-data.progress)<27 && data.jump>-43){
-        data.hit.add(ob.id);data.gap=Math.max(0,data.gap-config.hit);
-        data.score=Math.max(0,data.score-15);data.flashTime=.33;
-        blip(150,.11,'sawtooth',.02);announce('Akadályba ütköztél. Az üldöző közelebb került.');
+      const entry=ob.x-44;
+      // Az akadály ELEJÉN megtorpan a karakter, amíg nem ugrik elég magasra.
+      // Ezzel nem lehet egyszerűen átfutni rajta, de helyből újra megpróbálható az ugrás.
+      if(data.progress<=entry+.001 && nextProgress>=entry && data.jump>-(OBSTACLE_HEIGHT[ob.type]+7)){
+        nextProgress=entry;
+        if(!data.hit.has(ob.id)){
+          data.hit.add(ob.id);data.gap=Math.max(0,data.gap-config.hit);
+          data.score=Math.max(0,data.score-15);data.flashTime=.33;
+          blip(150,.11,'sawtooth',.02);
+          announce('Megálltál az akadálynál! Nyomd meg az UGRÁS gombot a továbbhaladáshoz.');
+        }
+        break;
       }
     }
+    // Megtorpanáskor az üldöző akkor is közeledik, ha a karakter nem halad előre.
+    const actualSpeed=dt>0?(nextProgress-data.progress)/dt:0;
+    data.progress=nextProgress;
+    data.gap=clamp(data.gap+(actualSpeed-config.chaser)*dt,0,275);
     for(const c of CRYSTALS){
       if(!data.coins.has(c.id) && Math.abs(c.x-data.progress)<26 && data.jump< -52){
         data.coins.add(c.id);data.score+=30;blip(1170,.09);announce('Időkristály: plusz 30 pont.');
@@ -498,6 +531,17 @@
       if(near(x,-70,1000))obstacle(x,GROUND,ob.type);
     }
     if(data.progress>FINISH-950){const x=HERO_X+FINISH-data.progress;if(near(x,-150,1040))gate(x);}
+    // Közeledő akadály jól látható, előre jelzett ugrásfeladattal.
+    if(data.phase==='running'){
+      const approaching=OBSTACLES.find(ob=>ob.x-data.progress>=0 && ob.x-data.progress<300);
+      if(approaching){
+        const d=approaching.x-data.progress;
+        const x=HERO_X+d;
+        rect(x-56,GROUND-176,112,29,d<120?'#973d55':'#254a73');
+        rect(x-56,GROUND-176,112,3,'#ffe5a3');
+        textAt('↑ UGORJ!',x,GROUND-161,'bold 21px monospace','#fff6cb','center');
+      }
+    }
     // vízszintes futási sugár és üldöző
     if(data.phase==='running' && data.speedMode==='boost'){
       for(let i=0;i<4;i++)rect(HERO_X-45-i*25,GROUND-55+i*11,36,4,'#fff2be96');
@@ -573,9 +617,9 @@
 
   // Visszaellenőrzésre alkalmas, kizárólag olvasható státuszinformáció.
   Object.defineProperty(window,'idoFutamStatus',{get:()=>Object.freeze({
-    phase:data.phase,version:'1.0.0',questions:QUESTIONS.length,answered:data.questionIndex,
+    phase:data.phase,version:'1.1.0',questions:QUESTIONS.length,answered:data.questionIndex,
     progress:Math.round(data.progress),score:data.score,correct:data.correct,
-    gap:Math.round(data.gap),difficulty:data.difficulty
+    gap:Math.round(data.gap),difficulty:data.difficulty,obstacles:OBSTACLES.length
   })});
 
   renderSoundButton();updateSavedUI();show('menu');updateHud();

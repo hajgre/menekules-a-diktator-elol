@@ -1,38 +1,33 @@
-# Teszteredmények – Menekülés a diktátor elől! v1.0.0
+# Teszteredmények – v1.1.0
 
 2026. november 25.
 
-## Elvégzett vizsgálatok
+## Ezen kiadásban ténylegesen végzett ellenőrzések
+
+A JavaScript-vezérlőt valódi JS futtatókörnyezetben, egy DOM/Canvas-helyettesítőteszttel futtattuk. A belső állapotot kizárólag a teszt memóriájában tettük elérhetővé, ez a tesztkapu **nem** része az átadott `game.js` fájlnak.
 
 | Vizsgálat | Eredmény |
 |---|---|
-| JavaScript szintaxis (`node --check game.js` és `questions.js`) | Sikeres |
-| Chromium desktop megjelenítés (1440×1000), képernyőkép | Sikeres |
-| Chromium mobilnézet (390×844), képernyőkép | Sikeres |
-| Indítás és első történelmi kérdés | Sikeres |
-| **Kérdés közbeni teljes megállás** – pozíció, játékidő, üldöző távolsága, háttér animációja | Sikeres: az értékek változatlanok |
-| Mind a 10 kérdés helyes megválaszolása, könnyű szint | Sikeres, célba érés |
-| Mind a 10 kérdés helyes megválaszolása, normál szint | Sikeres, célba érés |
-| Mind a 10 kérdés helyes megválaszolása, kihívás szint | Sikeres, célba érés |
-| Válaszok száma: könnyű=2, normál/nehéz=3 | Sikeres |
-| Hibás válasz után 3 mp lassítás | Sikeres |
-| Tipp megjelenítése | Sikeres |
-| Szünet – idő, szereplők, pontszám nem változik | Sikeres |
-| Félbehagyott futam mentése, menüből folytatás | Sikeres az automatizált helyi tárhely-szimulációban |
-| Üldöző utoléri a játékost ismételt hibás válaszoknál | Sikeres – vereség megjelenik |
-| Nincs futás közbeni JavaScript-hiba a tesztelt útvonalakon | Sikeres |
+| `node --check` – `game.js`, `questions.js` | Sikeres |
+| Feladatok és akadályok: 10 kérdés, 22 akadály | Sikeres |
+| Első kérdés 1000, továbbiak 1350 pályaegységenként | Sikeres |
+| Akadály megállítja a futót, amíg nem ugrik | Sikeres |
+| Egy akadálynál egyszeri büntetés, ugrással továbblépés | Sikeres |
+| Teljes 10 kérdés és 22 akadály – könnyű | Sikeres |
+| Teljes 10 kérdés és 22 akadály – normál | Sikeres |
+| Teljes 10 kérdés és 22 akadály – kihívás | Sikeres |
+| Kérdés/megoldás közben a játékidő, haladás és üldözés nem változik | Sikeres |
+| Hibás válasz utáni három másodperces lassítás | Sikeres |
+| v1.0.0 mentés átváltása, pontok megtartása | Sikeres |
+| v1.1.0 mentés létrehozása és visszatöltése szimulált tárhelyről | Sikeres |
+| Ugrás gomb eseménykezelője | Sikeres |
 
-A végigjátszásokat a Chromium böngészőben automatizáltunk; a mozgást és időléptetést a **teszt során, csak memóriában hozzáadott** belső teszthurokkal gyorsítottuk. Ez a tesztkód nem része az átadott játékfájloknak. A valós sebességű első kérdésig történő játékmenetet külön böngészőpróbával ellenőriztük.
+## Nem ellenőrzött részek
 
-## Még nem ellenőrzött
+- A Chromium grafikus böngészős tesztje a futtatási környezetben navigációs korlátozásba ütközött; így **nincs új v1.1.0-s képernyőképes validáció**. Az előző v1.0.0-s mobilos/asztali képernyőképeket nem tekintjük új tesztnek.
+- Fizikai telefon és Safari/Firefox alatt a frissített változatot nem próbáltuk ki.
+- A felolvasás tényleges hangkimenetét és a GitHub Pages éles HTTPS-es futását a feltöltés után kell ellenőrizni.
 
-- A közzétett GitHub Pages URL valódi hálózati kiszolgálását a feltöltés után kell tesztelni.
-- Valódi fizikai mobilkészüléken, Safari / Firefox külön ellenőrzés nem történt; csak Chromium mobilméretet vizsgáltunk.
-- A böngészőfüggő magyar szövegfelolvasás hangminőségét és tényleges audio-kimenetét nem ellenőriztük.
-- Az automatizált teszt mentéstárolót szimulált, valós GitHub-origin helyi tárhelyét nem teszteltük.
+## Ismert korlát
 
-## Ismert működési korlátok
-
-- A felolvasás csak akkor működik, ha a böngésző támogatja a SpeechSynthesis funkciót és van megfelelő hang.
-- A motoros feladatok miatt a pontszám nem kizárólag történelmi tudást tükröz.
-- Rekordok és mentések böngésző-/eszközfüggők; böngészőadatok törlésekor elvesznek.
+Az ügyességi teljesítmény nem egyenlő a történelmi tudással. A megtorpanás és az üldöző miatti vereség a mozgásmechanikához tartozik; pedagógiai értékeléskor a kérdések helyességét külön érdemes figyelembe venni.

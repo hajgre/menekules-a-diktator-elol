@@ -1,4 +1,4 @@
-# MENEKÜLÉS A DIKTÁTOR ELŐL! – v1.0.0
+# MENEKÜLÉS A DIKTÁTOR ELŐL! – v1.1.0
 
 Színes, eredeti pixelgrafikás, oldalsó nézetes történelmi futókaland. TANAK 8. évfolyam számára. A II. világháború korai eseményeit és alapfogalmait gyakoroltatja **10 rövid kérdéssel**. A pálya és a figurák fiktívek: nem történelmi áldozatok menekülésének újrajátszása.
 
@@ -31,9 +31,10 @@ A játékhoz internetkapcsolat a feltöltés után nem szükséges; nincs API-ku
 ## Játékszabály
 
 - A főhős automatikusan fut jobbra; ugrás: **Space**, **↑**, **W**, vagy telefonon **UGRÁS**.
+- A kérdések előtti és közötti futószakaszok hosszabbak (első kérdésig 1000 pályaegység, utána 1350 pályaegységenként).
 - 10 kérdés jelenik meg a kijelölt állomásoknál. **A teljes játékszimuláció megáll**, amíg a tanuló válaszol, és a válasz utáni magyarázatot elolvassa.
 - **Jó válasz:** 5 másodperc gyorsítás +100 pont; **rossz válasz:** 3 másodperc lassítás. Hibánál sincs végleges kiesés a kérdésből, a helyes információ megjelenik.
-- **Akadályba ütközés:** a digitális üldöző közelebb kerül, −15 pont. **Órakristály:** ugrással gyűjthető, +30 pont.
+- **22 kötelező ugróakadály:** a főhős az akadály előtt megáll, ha nem ugrott elég magasra. A továbbhaladáshoz meg kell nyomni az ugrás gombot. Egy-egy akadállyal való első ütközésnél az üldöző közelebb kerül, −15 pont. **Órakristály:** ugrással gyűjthető, +30 pont.
 - Ha az üldöző utolér, a futam véget ér; azonnali újrakezdés lehetséges.
 - 10 kérdés és a célkapu elérése után a játék eredményképernyővel zárul.
 - **Könnyű:** 2 válaszlehetőség, enyhébb üldözés, díjmentes tipp. **Normál:** 3 válaszlehetőség, tipp −10 pont. **Kihívás:** 3 válaszlehetőség, gyorsabb üldözés, tipp −10 pont.
@@ -42,7 +43,7 @@ A játékhoz internetkapcsolat a feltöltés után nem szükséges; nincs API-ku
 
 ## Adatvédelem és mentés
 
-A legjobb eredmény és a félbehagyott futam **kizárólag a böngésző helyi tárhelyére** (`localStorage`) kerül. Nem küldünk adatokat szerverre, nincs követőkód, regisztráció, tanulónév vagy statisztikagyűjtés. A félbehagyott futam külön törölhető a főoldalon; ez a rekordokat nem törli. A teljes böngészőadatok törlése a mentést is törli.
+A legjobb eredmény és a félbehagyott futam **kizárólag a böngésző helyi tárhelyére** (`localStorage`) kerül. Nem küldünk adatokat szerverre, nincs követőkód, regisztráció, tanulónév vagy statisztikagyűjtés. A félbehagyott futam külön törölhető a főoldalon; ez a rekordokat nem törli. A v1.0.0 régi mentéseit a v1.1.0 automatikusan átszámítja a hosszabb pályára, miközben a megválaszolt kérdéseket és a pontokat megtartja. A teljes böngészőadatok törlése a mentést is törli.
 
 ## Szakmai megjegyzés
 
@@ -50,7 +51,7 @@ A náci diktatúrát megszemélyesítő pixeles üldöző egyértelműen negatí
 
 ## Technikai adatok
 
-- Verzió: **1.0.0**
+- Verzió: **1.1.0**
 - Teljesen önálló statikus HTML/CSS/JS játék, 0 külső függőséggel
 - Reszponzív asztali és mobilos felület
 - Minden történelmi személynév a jóváhagyott listára korlátozott (a játékban csak Hitler szerepel név szerint)

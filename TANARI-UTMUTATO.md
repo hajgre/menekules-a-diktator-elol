@@ -1,4 +1,4 @@
-# Tanári útmutató – Menekülés a diktátor elől! (v1.0.0)
+# Tanári útmutató – Menekülés a diktátor elől! (v1.1.0)
 
 **Téma:** a II. világháború kezdete, Pearl Harbor, a háború fordulatai, Észak-Afrika, az ellenállás és a náci üldöztetés alapfogalmai.
 
@@ -39,3 +39,7 @@ A játékbeli üldözés **fiktív arcade-játékelem**; nem zsidó vagy más ü
 ## A tíz kérdés témája
 
 1939; Lengyelország; Pearl Harbor; Sztálingrád; Midway; **El-Alamein (az eredeti 6. kérdés helyett)**; partizán; gettó; antiszemitizmus; holokauszt. Történelmi személyek közül a játékban csak Hitler szerepel név szerint.
+
+## Új ügyességi kihívás (v1.1.0)
+
+Az akadályokon való átjutáshoz ténylegesen ugrani kell. Az akadály előtti megtorpanás alatt az üldöző közelebb kerül, ezért a mozgás ügyességet igényel. A kérdések között hosszabb idő telik el, ami több teret ad a motoros játéknak. A nehézségi fokozatot a játékos helyzetéhez igazítsuk; a motoros reakcióidő miatt a játék nem használható önmagában történelmi tudás mérésére.

@@ -1,23 +1,19 @@
-# GitHub Pages feltöltés, frissítés és visszaállítás
+# GitHub-frissítés – v1.1.0
 
-**Vigyázat:** a játék különálló projekt; a meglévő `idougras-1941` repositoryhoz ne nyúlj.
+A meglévő játékod: https://hajgre.github.io/menekules-a-diktator-elol/
+Repository: https://github.com/hajgre/menekules-a-diktator-elol
 
-## Első feltöltés
+## Frissítés, mentések megtartásával
 
-1. Új GitHub repository létrehozása (például `menekules-a-diktator-elol`).
-2. A letöltött ZIP **kicsomagolása**.
-3. A kicsomagolt fájlok feltöltése a repository gyökérmappájába, `Commit changes`.
-4. `Settings → Pages → Deploy from a branch → main → /(root) → Save`.
-5. A közzétett link ellenőrzése a böngészőben.
+1. **Biztonsági mentés:** GitHub → meglévő repository → Code → Download ZIP. Tedd el a v1.0.0 állapotot.
+2. Csomagold ki a kapott `MENEKULES-A-DIKTATOR-ELOL-GitHub-Pages-v1.1.0.zip` fájlt.
+3. A repository gyökérmappájába töltsd fel a kicsomagolt **index.html**, **game.js**, **questions.js**, **styles.css** és a dokumentációs fájlokat (Add file → Upload files). Az azonos nevű fájlok frissülnek.
+4. Kattints a **Commit changes** gombra. A Pages beállításai maradjanak: `main` és `/(root)`.
+5. Ellenőrizd az oldalt: https://hajgre.github.io/menekules-a-diktator-elol/?v=110
+6. Nézd meg a fejlécben a **v1.1.0** feliratot. Kezdj új futamot, és ellenőrizd az első ugróakadályt.
 
-## Biztonságos verziófrissítés
-
-1. A repositoryban **Code → Download ZIP**: ez a visszaállítási példány.
-2. A frissített fájlokat töltsd fel a **meglévő azonos nevű fájlok helyére**, a könyvtárstruktúrát megtartva.
-3. Írj verziót jelölő commitüzenetet, például `feat: történelmi pályabővítés v1.1.0`.
-4. Ha változnak a `game.js`, `questions.js` vagy `styles.css` fájlok, frissítsd az `index.html` végén a fájlhivatkozásokban a `?v=` értékeket is.
-5. A GitHub Pages frissülése után próbáld ki külön a startot, 1 kérdést, a szünetet és az újrakezdést.
+**Ne töröld a böngésző helyi tárhelyét (localStorage)!** A régi mentéseket a játék automatikusan kezeli. A 10 történelmi kérdés nem változott.
 
 ## Visszaállítás
 
-Ha egy új verzió meghibásodik, a GitHub régebbi commitját visszaállíthatod, vagy a mentett Code → Download ZIP fájljaival felülírhatod a hibás verzió fájljait. Commit után a Pages újra közzéteszi a fájlokat. Az előző verzió mentései nem feltétlenül kompatibilisek minden későbbi frissítéssel; ezt új verziónként tesztelni kell.
+Ha gond van, a GitHubon a korábbi commitra visszaállítva, vagy a biztonsági mentés `index.html`, `game.js`, `questions.js`, `styles.css` fájljainak ismételt feltöltésével visszakaphatod a v1.0.0 játékot. A v1.1.0 mentésében eltérő pályakoordináták szerepelnek: régebbi kiadásra történő visszalépésnél a korábban meglévő, **külön mentett** v1.0.0 böngészőmentés lehet szükséges; a ranglista általában megmarad.

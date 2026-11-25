@@ -1,4 +1,4 @@
-/** MENEKÜLÉS A DIKTÁTOR ELŐL – történelmi feladatbank v1.0.0
+/** MENEKÜLÉS A DIKTÁTOR ELŐL – történelmi feladatbank v1.1.0
  * Csak Hitler, Sztálin és Churchill szerepelhet név szerint történelmi személyként.
  * A 10 feladat szándékosan rövid és könnyű, TANAK 8. osztály számára.
  */
