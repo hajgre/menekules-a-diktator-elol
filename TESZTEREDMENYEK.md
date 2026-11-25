@@ -1,24 +1,21 @@
-# Tényleges ellenőrzések – v1.2.0
+# Ellenőrzési eredmények – v1.3.0
 
 **Dátum:** 2026-11-25
 
-## Sikeres ellenőrzések
+## Sikeres tesztek
 
-- `node --check game.js` – JavaScript-szintaxis rendben.
-- Automatikus JS-szimuláció mindhárom nehézségi szinten: a 10 kérdés és 11 platformos szakasz végigjárható, **55 ugrás**, 33 platformra landolás, **0 szakadékba esés** a tesztbot pontos ugrásaival. A bot nem valós tanuló, hanem ellenőrzés.
-- 10 kérdés és 22 korábbi akadály száma változatlan.
-- Kérdéskor és magyarázat közben a játékidő és a platformok belső ideje sem halad.
-- Könnyű szinten dupla ugrás, normál és kihívás fokozaton csak egy ugrás.
-- Szándékos leeséskor büntetés és biztonságos újrakezdési pont; a megválaszolt kérdések száma megmarad.
-- Mozgó platformok helyzete ténylegesen változik a játékidővel.
-- Helyes válasz turbója és hibás válasz lassítása ellenőrizve.
-- Régi v1/v2 mentések betöltése; v3 levegőbeli mentés; meglévő böngészőtárhely-kulcsok változatlanok.
-- Mobilos érintés csak egy ugrást vált ki; billentyűzettel külön ugrás indítható.
-- **Valódi Chromium headless böngészőben** tesztelve: a játék indul, a menü megjelenik, desktop Space és mobil pointerdown ugrás működik; nem volt JavaScript-hiba. Képernyőképek: `preview-v120-menu-desktop.png`, `preview-v120-run-mobile.png`, `preview-v120-platform-course.png`.
+- `node --check game.js`: sikeres, szintaktikailag helyes.
+- 16 JavaScript-logikai teszt: **mind sikeres** (lásd `TESZTEK-JS.log`).
+- Mindhárom nehézség: 10 kérdéses teljes pályaszimuláció, ugrások, platformok és szakadékok ellenőrizve.
+- Elkapás után a játékvilág **nem mozog**: a haladás, üldöző távolsága, belső idő és játékidő változatlan.
+- Vereségpanel nem jelenik meg az első másodpercben; utána megjelenik.
+- Pontos vereségszöveg és az **Újrapróbálom** és **Főmenü** gomb tesztelve.
+- Győzelem továbbra is azonnali, a 10 kérdés megmarad.
+- Régi v1/v2 mentések és a v3 formátum támogatása; rekordkulcsok változatlanok.
+- Chromium headless böngészőben (desktop 1365×860 és mobil 390×844): elkapási effekt, fagyasztás, késleltetés, gombok, újraindítás, főmenü: sikeres. **0 JavaScript-hiba**. Lásd `TESZTEK-BONGESZO.json`.
 
-## Korlátok
+## Nem / részben ellenőrizhető
 
-- A programozott bot ismerte a pályát: a diákok tényleges teljesíthetősége pedagógiai próba során derül ki.
-- Fizikai telefonos és minden böngészőt lefedő teszt **nem** történt.
-- A GitHubon közzétett éles változat ellenőrzése még hátravan.
-- A nyilvános GitHub jelenlegi forrása nem volt közvetlenül elérhető; a korábban átadott v1.1.0 verzió szolgált kiindulásul.
+- HTTPS-es GitHub Pages telepítés: az aktuális repository/éles oldal hálózatilag nem volt elérhető. A helyi HTTP próba is környezeti tiltás miatt meghiúsult; a böngészőtesztbe az összes forrásfájl közvetlenül be lett injektálva.
+- Valódi hangszórón és fizikai telefonon a hang és a rezgés/vizuális élmény nem volt külön ellenőrizve. A hangot a felhasználó beállítása szabályozza.
+- Valódi tanulókkal végzett kipróbálás nem történt.

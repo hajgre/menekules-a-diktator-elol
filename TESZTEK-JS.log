@@ -12,3 +12,5 @@ OK: easy: 10 kérdés és teljes platformpálya szimulált végigjátszása
 OK: normal: 10 kérdés és teljes platformpálya szimulált végigjátszása
 OK: hard: 10 kérdés és teljes platformpálya szimulált végigjátszása
 OK: ugrás gomb mobil pointerdown után nem aktivál újra kattintáskor
+OK: elkapás: 0,4 mp villanás + 1 mp késleltetett vereségpanel és változatlan játékállapot
+OK: az elkapás mellett a győzelmi panel azonnali maradt

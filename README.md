@@ -1,35 +1,36 @@
-# MENEKÜLÉS A DIKTÁTOR ELŐL! – v1.2.0
+# Menekülés a diktátor elől! – v1.3.0
 
-**Eredeti 2D pixelplatformjáték** a II. világháborúról, TANAK 8. osztály számára. Nincs szükség regisztrációra, internetes API-ra vagy külső könyvtárra.
+**GitHub Pages-kompatibilis 2D történelmi pixelplatformjáték (TANAK 8.)**
 
-## Újdonságok
+## Újdonság: „Elkaptak!” vereségjelenet
 
-- 11 platformos ügyességi szakasz, összesen **33 magasított platform**; a későbbi pályákon egyes platformok mozognak.
-- **10 szakadék**, melyeket a platformokon ugrálva kell áthidalni.
-- **22 láda/hordó** (a v1.1.0 akadályai), változatos ugrási lehetőségek.
-- Leeséskor biztonságos előző pontról lehet újra próbálkozni, de az üldöző közelebb jut, és pontlevonás történik.
-- Könnyű szinten egy második ugrás is lehetséges a levegőben. Normál és kihívás szinten egy ugrás jár elrugaszkodásonként.
-- 10 változatlan, történelmileg ellenőrzött rövid kérdés; kérdéskor **minden mozgás és időmérés megáll**, a válasz utáni ismertetőnél is.
-- Helyes válasz: 5 másodperc turbó, +100 pont. Hibás: 3 másodperc lassítás, továbbjutási lehetőséggel.
+Ha az üldöző eléri a karaktert, a pálya **azonnal megáll**. A játék 0,4 másodperces piros villanást és enyhe, fokozatosan megszűnő kamerarázást mutat, valamint – ha a „Hang: be” aktív – rövid, háromhangos retro vereséghangot játszik. **Az elkapástól számított 1 másodperc után** megjelenik a panel:
 
-## Irányítás
+- **Elkaptak!**
+- **Hitler utolért, a küldetés megszakadt.**
+- **Újrapróbálom** / **Főmenü**
 
-Az automatikusan futó karaktert ugrással irányítod: **Szóköz, ↑, W**, illetve mobilon **UGRÁS**. Számítógépen 1/2/3 a válaszok, Enter a kérdés utáni folytatás, Esc a szünet.
+Csökkentett mozgás beállításnál a kamerarázás kimarad. A hang kikapcsolva marad, ha a felhasználó ezt korábban választotta. Nincs külső hang- vagy képfájl; a hangot a böngésző generálja.
 
-TIPP: az ugrást még a platform előtt indítsd! A platform tetejéről újabb ugrással juthatsz át a következőre. Könnyű fokozaton a levegőben még egyszer megnyomhatod az ugrást.
+## Megőrzött elemek
 
-## GitHub Pages – frissítés
+- 10 változatlan történelmi kérdés, 3 nehézségi szint
+- 33 platform, 10 szakadék, 22 láda/hordó
+- teljes megállás kérdés és visszajelzés alatt
+- 5 mp turbó / 3 mp lassítás, pontok, rekordok
+- ugrás billentyűzetről vagy mobilról; könnyű módban dupla ugrás
+- böngészőn belüli mentések és hangbeállítás ugyanazokkal a kulcsokkal:
+  `idofutam_mentes_v1`, `idofutam_rekordok_v1`, `idofutam_hang_v1`
+- v1–v3 mentésforma támogatása
 
-Lásd a `GITHUB-FRISSITES.md` fájlt. Fő fájlok: `index.html`, `styles.css`, `game.js`, `questions.js`. **Az IDŐUGRÁS játékát ne módosítsd.**
+## Fájlok
 
-## Mentés és adatvédelem
+`index.html`, `styles.css`, `game.js`, `questions.js` – a játék működéséhez szükséges fájlok; mind a repository főmappájába kerüljenek.
 
-A program a meglévő `idofutam_mentes_v1`, `idofutam_rekordok_v1` és `idofutam_hang_v1` böngészőtárhely-kulcsokat használja tovább. A mentés formátuma v3, a v1 és v2 mentésekből történő folytatás támogatott. Az összes adat **helyileg, a böngészőben** marad. Nem gyűjtünk személyes adatokat.
+`GITHUB-FRISSITES.md`, `CHANGELOG.md`, `TESZTEREDMENYEK.md` – útmutató és ellenőrzések.
 
-## Történelmi keret
+## Technikai háttér
 
-Az üldöző karikatúraszerű negatív szereplő; a futópálya teljesen fiktív, **nem** a történelmi üldözöttek túlélésének szimulációja. A kérdések a már tanult tényeket ismétlik. A játék nem használja a holokauszt áldozatainak sorsát játékkockázatként.
+Nincsenek külső csomagok, adatbázisok, API-k vagy fiókok. A játék személyes adatot nem gyűjt. A pixelvilág és a menekülés fiktív: a történelmi üldözöttek sorsát nem szimulálja.
 
-## Fejlesztői ellenőrzés
-
-A helyi JS- és böngészős tesztek eredményét a `TESZTEREDMENYEK.md` tartalmazza. Az éles GitHub Pages-t a feltöltés után külön ellenőrizni kell.
+**Forrás:** a korábban kiadott **v1.2.0** helyi forráskódjára épül. A nyilvános GitHub-repository pillanatnyi fájljai a jelen környezetből nem voltak beolvashatók. Feltöltés előtt készíts biztonsági mentést.

@@ -1,0 +1,20 @@
+[
+  {
+    "device": "desktop",
+    "gotLoss": true,
+    "worldFrozen": true,
+    "panelDelay": true,
+    "retry": true,
+    "menu": true,
+    "errors": []
+  },
+  {
+    "device": "mobile",
+    "gotLoss": true,
+    "worldFrozen": true,
+    "panelDelay": true,
+    "retry": true,
+    "menu": true,
+    "errors": []
+  }
+]

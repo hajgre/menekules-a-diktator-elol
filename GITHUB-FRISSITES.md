@@ -1,16 +1,20 @@
-# GitHub-frissítés – v1.2.0
+# Frissítés GitHub Pages-en – v1.3.0
 
-**Repository:** https://github.com/hajgre/menekules-a-diktator-elol
+**Meglévő repository:** https://github.com/hajgre/menekules-a-diktator-elol
 
-1. Nyisd meg a repositoryt, és töltsd le a korábbi állapotot: **Code → Download ZIP**. Ez a visszaállítható biztonsági mentésed.
-2. Csomagold ki a most kapott `MENEKULES-A-DIKTATOR-ELOL-GitHub-Pages-v1.2.0.zip` fájlt.
-3. A **meglévő repository főmappájába** töltsd fel a kicsomagolt `index.html`, `game.js`, `styles.css`, `questions.js` fájlokat (a dokumentációkkal együtt). **Ne új repositoryba, és ne ZIP-ként!**
-4. Az azonos nevű fájlokat cseréld le. Kattints: **Commit changes**. Javasolt üzenet: `feat: v1.2.0 platformok es szakadekok`
-5. A GitHub Pages beállításait nem kell átállítanod. Megnyitás: https://hajgre.github.io/menekules-a-diktator-elol/?v=120
-6. Ellenőrizd: a fejlécben **v1.2.0**, a játékban emelt platformok, szakadékok és 10 kérdés látható.
+1. Nyisd meg a repository **Code** lapját. **Code → Download ZIP**: mentsd el a jelenlegi, jól működő verziót! (Visszaállítható.)
+2. Csomagold ki a **MENEKULES-A-DIKTATOR-ELOL-GitHub-Pages-v1.3.0.zip** fájlt.
+3. A repository főmappájába töltsd fel az új **index.html**, **styles.css**, **game.js**, **questions.js** fájlokat. Ha rákérdez a felülírásra, az újakat válaszd. A ZIP-et önmagában NE töltsd fel a játék helyett.
+4. Kattints **Commit changes**. A **Settings → Pages** alatt maradjon a `main` ág és a `/(root)` mappa.
+5. Nyisd meg: https://hajgre.github.io/menekules-a-diktator-elol/?v=130 . Ha még a régi látszik, frissíts Ctrl+F5-tel vagy nyisd meg privát ablakban.
+6. Próbáld ki a vereséget: hagyd, hogy az üldöző utolérjen. Előbb legyen piros villanás és remegés, majd 1 mp után „Elkaptak!” panel, és működjön mindkét gomb. Hanghoz a „Hang: be” gombot kapcsold be.
 
-**Ha még a régi játék látszik:** próbálj privát böngészőablakot vagy Ctrl+F5-öt; ne töröld a mentést.
+**Nem kell új repositoryt vagy adatbázist létrehozni.** A helyi mentések és rekordok változatlan tárhely-kulcsokon maradnak.
 
-**Visszaállítás:** a letöltött korábbi GitHub ZIP-ből töltsd vissza a fő fájlokat, és készíts új commitot. A félbehagyott v1.2.0-s futam korábbi kód alatti viselkedése nem garantált, ezért visszaállítás előtt a helyi mentéseket lehetőleg ne változtasd. A korábbi rekordokat a kulcs nem érinti.
+## Visszaállítás
 
-**Fontos:** a kész csomag a legutóbbi rendelkezésre álló v1.1.0-s forrásból készült; az élő GitHub fájlok beolvasását a hozzáférés blokkolta. Ha azóta a GitHubon kézzel módosítottál valamit, feltöltés előtt érdemes azt összevetni az új fájlokkal.
+Ha az új verzió nem működik, a biztonsági mentésből töltsd vissza a korábbi **index.html**, **styles.css**, **game.js**, **questions.js** fájlokat a főmappába, majd ismét **Commit changes**. A mentett tanulói eredményeket NE töröld a böngészőből.
+
+## Korlát
+
+A módosítás a helyileg rendelkezésre álló v1.2.0-ból készült; az élő GitHub-fájlokat nem tudtuk összehasonlítani, és a GitHub Pages közzétételt csak feltöltés után lehet ellenőrizni.

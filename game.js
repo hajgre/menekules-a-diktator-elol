@@ -1,4 +1,4 @@
-/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.2.0
+/* MENEKÜLÉS A DIKTÁTOR ELŐL! – 1.3.0
  * Külső könyvtár nélküli, eredeti canvas-pixelplatformjáték.
  * A játék világát csak a 'running' állapotban léptetjük.
  */
@@ -63,6 +63,9 @@
     hard:{base:202,chaser:194,hit:45,label:'Kihívás',airJumps:0,fallCost:60}
   };
   const PANELS = ['menuPanel','questionPanel','feedbackPanel','endPanel','pausePanel'];
+  // Vereségkor egy másodpercig csak látványeffekt fut: a játékvilág megáll.
+  const CATCH_DURATION = 1, CATCH_FLASH_DURATION = .4;
+  const reducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const near=(x,a,b)=>x>=a&&x<=b;
   const pad=n=>String(n).padStart(2,'0');
@@ -77,7 +80,7 @@
     gap:226,jump:0,vy:0,grounded:true,supportId:null,airJumps:0,falls:0,elapsed:0,worldClock:0,speedMode:'',speedTime:0,
     flashTime:0,hit:new Set(),coins:new Set(),questionChoices:[],hintShown:false,
     best:readStore(BEST_SAVE)||{},saved:null,sound:false,saveCounter:0,
-    finalOutcome:'',lastResultCorrect:false,focusBeforeDialog:null
+    finalOutcome:'',lastResultCorrect:false,focusBeforeDialog:null,catchElapsed:0
   };
   data.saved=validSave(readStore(GAME_SAVE));
   data.sound=readStore(SOUND_SAVE)===true;
@@ -137,7 +140,7 @@
     data.progress=0;data.questionIndex=0;data.score=0;data.correct=0;data.gap=226;
     data.jump=0;data.vy=0;data.grounded=true;data.supportId=null;data.airJumps=0;data.falls=0;
     data.elapsed=0;data.worldClock=0;data.speedMode='';data.speedTime=0;
-    data.flashTime=0;data.hit.clear();data.coins.clear();data.hintShown=false;
+    data.flashTime=0;data.catchElapsed=0;data.hit.clear();data.coins.clear();data.hintShown=false;
     data.saveCounter=0;data.saved=null;
     deleteStore(GAME_SAVE);
   }
@@ -177,7 +180,7 @@
   function show(phase,panelName=null){
     data.phase=phase;
     const name=panelName || ({menu:'menuPanel',question:'questionPanel',feedback:'feedbackPanel',won:'endPanel',lost:'endPanel',paused:'pausePanel'}[phase]);
-    $('overlay').hidden=phase==='running';
+    $('overlay').hidden=phase==='running'||phase==='caught';
     PANELS.forEach(id=>$(id).hidden=id!==name);
     $('pauseBtn').disabled=phase!=='running';
     $('jumpBtn').disabled=phase!=='running';
@@ -322,18 +325,27 @@
       blip(880,.16);setTimeout(()=>blip(1175,.18),160);
     }else{
       $('endTag').textContent='↻ A FUTAM VÉGET ÉRT';
-      $('endTitle').textContent='AZ ÜLDÖZŐ UTOLÉRT!';
-      $('endDescription').textContent='Próbáld újra! A helyes válaszok gyorsítanak, az akadályokat pedig átugorhatod.';
-      $('endIcon').textContent='⏳';blip(180,.22,'sawtooth',.023);
+      $('endTitle').textContent='Elkaptak!';
+      $('endDescription').textContent='Hitler utolért, a küldetés megszakadt.';
+      $('endIcon').textContent='⏳';
+      data.catchElapsed=0;
+      // Rövid, lefelé lépő retro hang. A Hang: ki beállítást tiszteletben tartjuk.
+      blip(375,.13,'sawtooth',.026);
+      setTimeout(()=>{if(data.phase==='caught')blip(270,.13,'sawtooth',.021);},130);
+      setTimeout(()=>{if(data.phase==='caught')blip(175,.18,'triangle',.025);},260);
     }
+    $('endPanel').classList.toggle('loss-dialog',outcome==='lost');
+    $('retryBtn').textContent=outcome==='lost'?'↻ Újrapróbálom':'↻ Újrajátszom';
+    $('backBtn').textContent='⌂ Főmenü';
     $('resultCorrect').textContent=`${data.correct} / 10`;
     $('resultScore').textContent=String(data.score);
     $('resultTime').textContent=fmtTime(data.elapsed);
     const best=data.best[data.difficulty];
     $('bestResult').textContent=best?`${LEVELS[data.difficulty].label} rekord: ${best.score} pont`:'A következő futam lehet a rekordod!';
     data.saved=null;deleteStore(GAME_SAVE);updateSavedUI();
-    show(outcome==='won'?'won':'lost');
-    announce(outcome==='won'?'Sikerült. Elérted a célt.':'Az üldöző utolért. Újra próbálhatod.');
+    // Nem jelenítjük meg azonnal a panelt: az elkapás után 1 másodperces animáció jön.
+    show(outcome==='won'?'won':'caught');
+    announce(outcome==='won'?'Sikerült. Elérted a célt.':'Elkaptak! Hitler utolért, a küldetés megszakadt.');
   }
 
   function inPit(x){return PITS.find(p=>x>=p.x && x<p.x+p.w)||null;}
@@ -690,7 +702,26 @@
     if(previousTime==null)previousTime=time;
     const dt=clamp((time-previousTime)/1000,0,.032);
     previousTime=time;
-    update(dt);draw();requestAnimationFrame(frame);
+    if(data.phase==='caught'){
+      // Idő, pontszám, platformok, üldöző és karakter marad a helyén.
+      data.catchElapsed=Math.min(CATCH_DURATION,data.catchElapsed+dt);
+      if(data.catchElapsed>=CATCH_DURATION){
+        show('lost');
+        announce('Elkaptak! Választhatod az Újrapróbálom vagy a Főmenü gombot.');
+      }
+    }else update(dt);
+    ctx.save();
+    if(data.phase==='caught'&&!reducedMotion){
+      const shake=8*Math.max(0,1-data.catchElapsed/.65);
+      ctx.translate(Math.sin(data.catchElapsed*73)*shake,Math.cos(data.catchElapsed*61)*shake*.57);
+    }
+    draw();ctx.restore();
+    if(data.phase==='caught'&&data.catchElapsed<CATCH_FLASH_DURATION){
+      const strength=1-data.catchElapsed/CATCH_FLASH_DURATION;
+      ctx.fillStyle=`rgba(226,35,54,${(reducedMotion?.23:.55)*strength})`;
+      ctx.fillRect(0,0,W,H);
+    }
+    requestAnimationFrame(frame);
   }
   function onKey(event){
     const tag=event.target?.tagName;
@@ -745,11 +776,11 @@
 
   // Visszaellenőrzésre alkalmas, kizárólag olvasható státuszinformáció.
   Object.defineProperty(window,'idoFutamStatus',{get:()=>Object.freeze({
-    phase:data.phase,version:'1.2.0',questions:QUESTIONS.length,answered:data.questionIndex,
+    phase:data.phase,version:'1.3.0',questions:QUESTIONS.length,answered:data.questionIndex,
     progress:Math.round(data.progress),score:data.score,correct:data.correct,
     gap:Math.round(data.gap),difficulty:data.difficulty,obstacles:OBSTACLES.length,
     platforms:PLATFORMS.length,pits:PITS.length,falls:data.falls,
-    grounded:data.grounded,heroHeight:Math.round(-data.jump)
+    grounded:data.grounded,heroHeight:Math.round(-data.jump),catchSeconds:data.phase==='caught'?Number(data.catchElapsed.toFixed(2)):null
   })});
 
   renderSoundButton();updateSavedUI();show('menu');updateHud();
